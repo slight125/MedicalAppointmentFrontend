@@ -9,6 +9,7 @@ import {
   Clock,
   FileText
 } from 'lucide-react';
+import { fetchAdminSummaryAnalytics, fetchAdminBookingTrends, fetchAdminRevenueAnalytics, fetchAdminAppointmentStatus } from '../../utils/api';
 
 interface AnalyticsData {
   totalUsers: number;
@@ -42,45 +43,46 @@ const AdminAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock analytics data for development
-    const mockData: AnalyticsData = {
-      totalUsers: 1234,
-      totalDoctors: 45,
-      totalAppointments: 2890,
-      totalRevenue: 145600,
-      appointmentsToday: 23,
-      pendingAppointments: 45,
-      completedAppointments: 2678,
-      cancelledAppointments: 167,
-      monthlyStats: [
-        { month: 'Jan 2024', appointments: 245, revenue: 12300, users: 89 },
-        { month: 'Feb 2024', appointments: 289, revenue: 14500, users: 102 },
-        { month: 'Mar 2024', appointments: 324, revenue: 16200, users: 118 },
-        { month: 'Apr 2024', appointments: 298, revenue: 14900, users: 95 },
-        { month: 'May 2024', appointments: 356, revenue: 17800, users: 134 },
-        { month: 'Jun 2024', appointments: 387, revenue: 19350, users: 156 }
-      ],
-      appointmentsByStatus: [
-        { status: 'Completed', count: 2678, percentage: 87.2 },
-        { status: 'Cancelled', count: 167, percentage: 5.8 },
-        { status: 'Pending', count: 45, percentage: 1.6 },
-        { status: 'In Progress', count: 156, percentage: 5.4 }
-      ],
-      revenueByMonth: [
-        { month: 'Jan', amount: 12300 },
-        { month: 'Feb', amount: 14500 },
-        { month: 'Mar', amount: 16200 },
-        { month: 'Apr', amount: 14900 },
-        { month: 'May', amount: 17800 },
-        { month: 'Jun', amount: 19350 }
-      ]
-    };
-
-    // Simulate API call
-    setTimeout(() => {
-      setAnalyticsData(mockData);
+    setLoading(true);
+    Promise.all([
+      fetchAdminSummaryAnalytics(),
+      fetchAdminBookingTrends(Number(dateRange)),
+      fetchAdminRevenueAnalytics(Number(dateRange)),
+      fetchAdminAppointmentStatus()
+    ]).then(([summaryRes, bookingsRes, revenueRes, statusRes]) => {
+      const summary = summaryRes.data;
+      const bookings = bookingsRes.data;
+      const revenue = revenueRes.data;
+      const status = statusRes.data;
+      setAnalyticsData({
+        totalUsers: summary.totals.users,
+        totalDoctors: summary.totals.doctors,
+        totalAppointments: summary.totals.appointments,
+        totalRevenue: summary.totals.revenue,
+        appointmentsToday: bookings.length > 0 ? bookings[bookings.length - 1].count : 0,
+        pendingAppointments: status.statusBreakdown?.find((s: any) => s.status === 'Pending')?.count || 0,
+        completedAppointments: status.statusBreakdown?.find((s: any) => s.status === 'Completed')?.count || 0,
+        cancelledAppointments: status.statusBreakdown?.find((s: any) => s.status === 'Cancelled')?.count || 0,
+        monthlyStats: bookings.map((b: any) => ({
+          month: b.date,
+          appointments: b.count,
+          revenue: revenue.dailyRevenue?.find((r: any) => r.date === b.date)?.revenue || 0,
+          users: 0 // Not available in backend, set to 0 or fetch separately
+        })),
+        appointmentsByStatus: status.statusBreakdown?.map((s: any) => ({
+          status: s.status,
+          count: s.count,
+          percentage: 0 // Not available, can be calculated if needed
+        })) || [],
+        revenueByMonth: revenue.dailyRevenue?.map((r: any) => ({
+          month: r.date,
+          amount: r.revenue
+        })) || []
+      });
       setLoading(false);
-    }, 1000);
+    }).catch(() => {
+      setLoading(false);
+    });
   }, [dateRange]);
 
   if (loading) {

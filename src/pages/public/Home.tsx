@@ -59,10 +59,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden">
-      {/* Live Image Indicator */}
-      <div className="fixed top-4 right-4 z-50 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
-        🖼️ Live Image Active
-      </div>
       
       {/* Animated Medical Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">

@@ -69,6 +69,20 @@ export const fetchDoctorPrescriptions = createAsyncThunk(
   }
 )
 
+// Admin: Get all prescriptions
+export const fetchAllPrescriptions = createAsyncThunk(
+  'prescriptions/fetchAllPrescriptions',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/prescriptions')
+      return response.data
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } }
+      return rejectWithValue(err.response?.data?.message || 'Failed to fetch all prescriptions')
+    }
+  }
+)
+
 // Create prescription (Doctor only)
 export const createPrescription = createAsyncThunk(
   'prescriptions/createPrescription',
@@ -170,6 +184,19 @@ const prescriptionSlice = createSlice({
         state.prescriptions = action.payload
       })
       .addCase(fetchDoctorPrescriptions.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload as string
+      })
+      // Admin: Fetch all prescriptions
+      .addCase(fetchAllPrescriptions.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchAllPrescriptions.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.prescriptions = action.payload
+      })
+      .addCase(fetchAllPrescriptions.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload as string
       })

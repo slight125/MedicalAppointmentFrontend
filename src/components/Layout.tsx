@@ -42,6 +42,7 @@ export default function Layout() {
     if (user?.role === 'user') {
       return [
         ...baseItems,
+        { name: 'Find Doctors', href: '/dashboard/find-doctors', icon: Users },
         { name: 'Payments', href: '/dashboard/payments', icon: CreditCard },
       ]
     }
@@ -91,7 +92,7 @@ export default function Layout() {
             <div className="bg-blue-600 rounded-full p-2">
               <Heart className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-800 dark:text-white">MediCare</span>
+            <span className="text-base font-bold text-gray-800 dark:text-white">MediCare</span>
           </div>
           {/* Close button only visible on mobile */}
           <button
@@ -155,7 +156,7 @@ export default function Layout() {
       {/* Main content - Account for sidebar on desktop */}
       <div className="lg:ml-64 min-h-screen">
         {/* Page content with proper padding for large screens */}
-        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 lg:p-8 xl:p-12 2xl:p-16">
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-2 lg:p-1 xl:p-12 2xl:p-16">
           {/* Mobile menu button */}
           <button
             onClick={() => setIsSidebarOpen(true)}

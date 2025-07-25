@@ -17,40 +17,6 @@ export default function AdminDashboard() {
   const { user } = useSelector((state: RootState) => state.auth as { user: { firstname?: string } })
   const navigate = useNavigate()
 
-  const systemStats = [
-    {
-      title: 'Total Users',
-      value: '1,284',
-      change: '+12% from last month',
-      icon: Users,
-      color: 'text-blue-600',
-      bg: 'bg-blue-100'
-    },
-    {
-      title: 'Total Appointments',
-      value: '856',
-      change: '+8% from last month',
-      icon: Calendar,
-      color: 'text-green-600',
-      bg: 'bg-green-100'
-    },
-    {
-      title: 'Revenue',
-      value: '$45,280',
-      change: '+15% from last month',
-      icon: DollarSign,
-      color: 'text-purple-600',
-      bg: 'bg-purple-100'
-    },
-    {
-      title: 'System Uptime',
-      value: '99.9%',
-      change: 'Excellent performance',
-      icon: Activity,
-      color: 'text-orange-600',
-      bg: 'bg-orange-100'
-    }
-  ]
 
   const recentActivity = [
     {
@@ -89,36 +55,6 @@ export default function AdminDashboard() {
       id: 5,
       action: 'System backup completed',
       user: 'System',
-      time: '1 hour ago',
-      type: 'system',
-      status: 'success'
-    }
-  ]
-
-  const quickActions = [
-    {
-      title: 'User Management',
-      description: 'Manage users, doctors, and administrators',
-      icon: Users,
-      color: 'btn-primary',
-      onClick: () => navigate('/admin/users')
-    },
-    {
-      title: 'Analytics',
-      description: 'View system analytics and reports',
-      icon: BarChart3,
-      color: 'btn-secondary',
-      onClick: () => navigate('/admin/analytics')
-    },
-    {
-      title: 'Reports',
-      description: 'Generate and download reports',
-      icon: FileText,
-      color: 'btn-accent',
-      onClick: () => navigate('/admin/reports')
-    },
-    {
-      title: 'System Health',
       description: 'Monitor system performance',
       icon: Activity,
       color: 'btn-info',
@@ -195,18 +131,17 @@ export default function AdminDashboard() {
 
       {/* System Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {systemStats.map((stat, index) => (
+        {[{
+          title: 'Total Users', value: 1200, desc: 'Active this month'
+        }, {
+          title: 'Total Doctors', value: 45, desc: 'Verified'
+        }, {
+          title: 'Appointments', value: 320, desc: 'Scheduled this week'
+        }].map((stat, index) => (
           <div key={index} className="bg-white rounded-lg shadow-md p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-medium text-gray-600">{stat.title}</p>
-                <p className="text-xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
-              </div>
-              <div className={`p-2 rounded-lg ${stat.bg}`}>
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
-              </div>
-            </div>
+            <p className="text-xs font-medium text-gray-600">{stat.title}</p>
+            <p className="text-xl font-bold text-gray-900 mt-1">{stat.value}</p>
+            <p className="text-xs text-gray-500 mt-1">{stat.desc}</p>
           </div>
         ))}
       </div>
@@ -237,27 +172,6 @@ export default function AdminDashboard() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {/* Quick Actions */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3 text-center">Quick Actions</h2>
-            <div className="space-y-2">
-              {quickActions.map((action, index) => (
-                <button
-                  key={index}
-                  onClick={action.onClick}
-                  className={`w-full btn btn-sm ${action.color} justify-start gap-2`}
-                >
-                  <action.icon className="w-4 h-4" />
-                  <div className="text-left">
-                    <div className="font-medium text-xs">{action.title}</div>
-                    <div className="text-xs opacity-75">{action.description}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Recent Activity */}
         <div className="lg:col-span-2">

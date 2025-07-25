@@ -95,6 +95,25 @@ export default function PaymentHistory() {
     return matchesSearch && matchesStatus && matchesDate
   })
 
+  const handleViewReceipt = async (paymentId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/payments/${paymentId}/receipt`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch receipt');
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      toast.error('Failed to fetch receipt');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -208,19 +227,14 @@ export default function PaymentHistory() {
           </div>
         ) : (
           filteredPayments.map((payment) => (
-            <div key={payment.id} className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+            <div key={payment.transaction_id || payment.id} className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     Payment #{payment.id}
                   </h3>
-                  <div className="flex items-center gap-4 mb-2">
-                    <span className={`badge ${getStatusBadge(payment.payment_status)} px-3 py-1`}>
-                      {payment.payment_status}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      Transaction ID: {payment.transaction_id}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`badge ${getStatusBadge(payment.payment_status)}`}>{payment.payment_status}</span>
                   </div>
                 </div>
                 <div className="text-right mt-4 md:mt-0">
@@ -236,7 +250,7 @@ export default function PaymentHistory() {
               {/* Appointment details not available in current Payment type */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium text-gray-800 mb-3">Payment Details</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="flex items-center text-gray-600">
                     <Calendar className="w-5 h-5 mr-3" />
                     <div>
@@ -251,12 +265,21 @@ export default function PaymentHistory() {
                       <p className="font-medium">{payment.transaction_id}</p>
                     </div>
                   </div>
+                  {payment.phone_number && (
+                    <div className="flex items-center text-gray-600">
+                      <CreditCard className="w-5 h-5 mr-3" />
+                      <div>
+                        <p className="text-xs text-gray-500">Phone Number</p>
+                        <p className="font-medium">{payment.phone_number}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="flex justify-end mt-6">
                 {payment.payment_status === 'completed' && (
-                  <button className="btn btn-outline btn-sm">
+                  <button className="btn btn-outline btn-sm" onClick={() => handleViewReceipt(payment.payment_id)}>
                     View Receipt
                   </button>
                 )}

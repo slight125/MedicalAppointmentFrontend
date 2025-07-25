@@ -9,11 +9,27 @@ export const api = axios.create({
   },
 })
 
-// Request interceptor to add auth token
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.exp) return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return false;
+  }
+}
+
+// Request interceptor to add auth token and check expiry
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token')
     if (token) {
+      if (isTokenExpired(token)) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        throw new axios.Cancel('Token expired, auto-logout');
+      }
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
@@ -34,5 +50,45 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export const fetchUserComplaints = async () => {
+  return api.get('/support'); // For user, backend should filter by user
+};
+
+export const fetchAdminComplaints = async () => {
+  return api.get('/support'); // For admin, returns all
+};
+
+export const submitComplaint = async (data: { related_appointment_id?: number; subject: string; description: string; category?: string; priority?: string }) => {
+  return api.post('/support', data);
+};
+
+export const deleteComplaint = async (id: string | number) => {
+  return api.delete(`/support/${id}`);
+};
+
+export const fetchMedicalHistory = async () => {
+  return api.get('/medical-history/self');
+};
+
+export const fetchAdminSummaryAnalytics = async () => {
+  return api.get('/admin/analytics/summary');
+};
+export const fetchAdminBookingTrends = async (range = 30) => {
+  return api.get(`/admin/analytics/bookings?range=${range}`);
+};
+export const fetchAdminRevenueAnalytics = async (range = 30) => {
+  return api.get(`/admin/analytics/revenue?range=${range}`);
+};
+export const fetchAdminAppointmentStatus = async () => {
+  return api.get('/admin/analytics/appointment-status');
+};
+
+export const fetchAllUsers = async () => {
+  return api.get('/admin/users');
+};
+export const downloadReport = async (type: string) => {
+  return api.get(`/admin/reports/${type}.csv`, { responseType: 'blob' });
+};
 
 export default api

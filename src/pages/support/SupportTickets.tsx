@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '../../store';
 import { MessageCircle, Plus, Clock, CheckCircle, AlertCircle, Search, Filter } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { fetchUserComplaints, submitComplaint, deleteComplaint } from '../../utils/api';
+import api from '../../utils/api';
 
 interface SupportTicket {
   id: string;
@@ -46,67 +48,32 @@ const SupportTickets: React.FC = () => {
     priority: 'medium'
   });
 
-  useEffect(() => {
-    // Mock data for development
-    const mockTickets: SupportTicket[] = [
-      {
-        id: '1',
-        userId: user?.user_id?.toString() || '1',
-        userName: user ? `${user.firstname} ${user.lastname}` : 'John Doe',
-        title: 'Cannot access appointment booking',
-        description: 'I\'m having trouble accessing the appointment booking page. It shows an error message when I try to book.',
-        status: 'open',
-        priority: 'high',
-        category: 'technical',
-        createdAt: '2024-01-15T10:30:00Z',
-        updatedAt: '2024-01-15T10:30:00Z',
-        responses: []
-      },
-      {
-        id: '2',
-        userId: user?.user_id?.toString() || '1',
-        userName: user ? `${user.firstname} ${user.lastname}` : 'John Doe',
-        title: 'Billing inquiry',
-        description: 'I have a question about my recent bill. The amount seems incorrect.',
-        status: 'in-progress',
-        priority: 'medium',
-        category: 'billing',
-        createdAt: '2024-01-10T14:20:00Z',
-        updatedAt: '2024-01-12T09:15:00Z',
-        responses: [
-          {
-            id: '1',
-            message: 'Thank you for contacting us. We are reviewing your billing inquiry and will get back to you within 24 hours.',
-            isStaff: true,
-            staffName: 'Support Team',
-            timestamp: '2024-01-11T08:30:00Z'
-          }
-        ]
-      },
-      {
-        id: '3',
-        userId: user?.user_id?.toString() || '1',
-        userName: user ? `${user.firstname} ${user.lastname}` : 'John Doe',
-        title: 'Prescription refill request',
-        description: 'I need to refill my prescription for blood pressure medication.',
-        status: 'resolved',
-        priority: 'low',
-        category: 'general',
-        createdAt: '2024-01-05T16:45:00Z',
-        updatedAt: '2024-01-08T11:20:00Z',
-        responses: [
-          {
-            id: '1',
-            message: 'Your prescription refill request has been processed and sent to your pharmacy.',
-            isStaff: true,
-            staffName: 'Dr. Sarah Wilson',
-            timestamp: '2024-01-08T11:20:00Z'
-          }
-        ]
-      }
-    ];
+  // Edit ticket
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', description: '' });
 
-    setTickets(mockTickets);
+  useEffect(() => {
+    fetchUserComplaints()
+      .then((res: any) => {
+        // Map backend complaints to SupportTicket format
+        const complaints = (res.data || []).map((c: any) => ({
+          id: c.complaint_id.toString(),
+          userId: c.user_id?.toString() || '',
+          userName: user ? `${user.firstname} ${user.lastname}` : 'User',
+          title: c.subject,
+          description: c.description,
+          status: (c.status || 'open').toLowerCase(),
+          priority: c.priority || 'medium', // Not in backend, default
+          category: c.category || 'general', // Not in backend, default
+          createdAt: c.created_at,
+          updatedAt: c.updated_at,
+          responses: [], // Not in backend, can be extended
+        }));
+        setTickets(complaints);
+      })
+      .catch(() => {
+        toast.error('Failed to load support tickets');
+      });
   }, [user]);
 
   const getStatusIcon = (status: string) => {
@@ -177,29 +144,39 @@ const SupportTickets: React.FC = () => {
 
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
-      // TODO: Replace with real API call
-      const newTicket: SupportTicket = {
-        id: Date.now().toString(),
-        userId: user?.user_id?.toString() || '1',
-        userName: user ? `${user.firstname} ${user.lastname}` : 'User',
-        ...newTicketForm,
-        status: 'open',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        responses: []
-      };
-      
-      setTickets([newTicket, ...tickets]);
+      await submitComplaint({
+        subject: newTicketForm.title,
+        description: newTicketForm.description,
+        category: newTicketForm.category,
+        priority: newTicketForm.priority,
+      });
       toast.success('Support ticket created successfully');
       setIsNewTicketModalOpen(false);
       setNewTicketForm({
         title: '',
         description: '',
         category: 'general',
-        priority: 'medium'
+        priority: 'medium',
       });
+      // Refresh tickets
+      fetchUserComplaints()
+        .then((res: any) => {
+          const complaints = (res.data || []).map((c: any) => ({
+            id: c.complaint_id.toString(),
+            userId: c.user_id?.toString() || '',
+            userName: user ? `${user.firstname} ${user.lastname}` : 'User',
+            title: c.subject,
+            description: c.description,
+            status: (c.status || 'open').toLowerCase(),
+            priority: c.priority || 'medium',
+            category: c.category || 'general',
+            createdAt: c.created_at,
+            updatedAt: c.updated_at,
+            responses: [],
+          }));
+          setTickets(complaints);
+        });
     } catch {
       toast.error('Failed to create support ticket');
     }
@@ -231,6 +208,76 @@ const SupportTickets: React.FC = () => {
       toast.success('Message sent successfully');
     } catch {
       toast.error('Failed to send message');
+    }
+  };
+
+  // Delete ticket
+  const handleDeleteTicket = async (ticketId: string) => {
+    if (!window.confirm('Are you sure you want to delete this support ticket?')) return;
+    try {
+      await deleteComplaint(ticketId);
+      toast.success('Support ticket deleted');
+      setIsModalOpen(false);
+      setSelectedTicket(null);
+      // Refresh tickets
+      fetchUserComplaints()
+        .then((res: any) => {
+          const complaints = (res.data || []).map((c: any) => ({
+            id: c.complaint_id.toString(),
+            userId: c.user_id?.toString() || '',
+            userName: user ? `${user.firstname} ${user.lastname}` : 'User',
+            title: c.subject,
+            description: c.description,
+            status: (c.status || 'open').toLowerCase(),
+            priority: 'medium',
+            category: 'general',
+            createdAt: c.created_at,
+            updatedAt: c.updated_at,
+            responses: [],
+          }));
+          setTickets(complaints);
+        });
+    } catch {
+      toast.error('Failed to delete support ticket');
+    }
+  };
+
+  const handleEditTicket = () => {
+    if (!selectedTicket) return;
+    setEditForm({ title: selectedTicket.title, description: selectedTicket.description });
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedTicket) return;
+    try {
+      await api.patch(`/support/${selectedTicket.id}`, {
+        subject: editForm.title,
+        description: editForm.description,
+      });
+      toast.success('Support ticket updated');
+      setIsEditing(false);
+      setSelectedTicket({ ...selectedTicket, title: editForm.title, description: editForm.description });
+      // Refresh tickets
+      fetchUserComplaints()
+        .then((res: any) => {
+          const complaints = (res.data || []).map((c: any) => ({
+            id: c.complaint_id.toString(),
+            userId: c.user_id?.toString() || '',
+            userName: user ? `${user.firstname} ${user.lastname}` : 'User',
+            title: c.subject,
+            description: c.description,
+            status: (c.status || 'open').toLowerCase(),
+            priority: 'medium',
+            category: 'general',
+            createdAt: c.created_at,
+            updatedAt: c.updated_at,
+            responses: [],
+          }));
+          setTickets(complaints);
+        });
+    } catch {
+      toast.error('Failed to update support ticket');
     }
   };
 
@@ -377,7 +424,15 @@ const SupportTickets: React.FC = () => {
                 <div>
                   <h3 className="font-bold text-lg flex items-center gap-2">
                     {getStatusIcon(selectedTicket.status)}
-                    {selectedTicket.title}
+                    {isEditing ? (
+                      <input
+                        className="input input-bordered text-lg font-bold"
+                        value={editForm.title}
+                        onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                      />
+                    ) : (
+                      selectedTicket.title
+                    )}
                   </h3>
                   <div className="flex items-center gap-2 mt-2">
                     <span className={getStatusBadge(selectedTicket.status)}>
@@ -391,12 +446,35 @@ const SupportTickets: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <button
-                  className="btn btn-sm btn-ghost"
-                  onClick={handleCloseModal}
-                >
-                  ✕
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    className="btn btn-sm btn-error"
+                    onClick={() => handleDeleteTicket(selectedTicket.id)}
+                  >
+                    Delete
+                  </button>
+                  {isEditing ? (
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={handleSaveEdit}
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-sm btn-info"
+                      onClick={handleEditTicket}
+                    >
+                      Edit
+                    </button>
+                  )}
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => { setIsEditing(false); handleCloseModal(); }}
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
 
               <div className="divider"></div>
@@ -410,9 +488,17 @@ const SupportTickets: React.FC = () => {
                       {new Date(selectedTicket.createdAt).toLocaleString()}
                     </time>
                   </div>
-                  <div className="chat-bubble chat-bubble-primary">
-                    {selectedTicket.description}
-                  </div>
+                 {isEditing ? (
+                   <textarea
+                     className="textarea textarea-bordered w-full"
+                     value={editForm.description}
+                     onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                   />
+                 ) : (
+                   <div className="chat-bubble chat-bubble-primary">
+                     {selectedTicket.description}
+                   </div>
+                 )}
                 </div>
               </div>
 
@@ -473,30 +559,28 @@ const SupportTickets: React.FC = () => {
         {/* New Ticket Modal */}
         {isNewTicketModalOpen && (
           <div className="modal modal-open">
-            <div className="modal-box max-w-2xl">
-              <h3 className="font-bold text-lg mb-4">Create New Support Ticket</h3>
-              
-              <form onSubmit={handleCreateTicket} className="space-y-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Title</span>
+            <div className="modal-box max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-2xl p-8">
+              <h3 className="font-bold text-lg mb-4 text-gray-700 dark:text-gray-100">Create New Support Ticket</h3>
+              <form onSubmit={handleCreateTicket} className="space-y-0">
+                <div className="form-control flex flex-col mb-4">
+                  <label className="label mb-2">
+                    <span className="label-text text-gray-700 dark:text-gray-200 font-medium">Title</span>
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered"
+                    className="input input-bordered border border-gray-300 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-400 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md px-4 py-2 w-full"
                     placeholder="Brief description of your issue"
                     value={newTicketForm.title}
                     onChange={(e) => setNewTicketForm({ ...newTicketForm, title: e.target.value })}
                     required
                   />
                 </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Category</span>
+                <div className="form-control flex flex-col mb-4">
+                  <label className="label mb-2">
+                    <span className="label-text text-gray-700 dark:text-gray-200 font-medium">Category</span>
                   </label>
                   <select
-                    className="select select-bordered"
+                    className="select select-bordered border border-gray-300 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-400 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md px-4 py-2 w-full"
                     value={newTicketForm.category}
                     onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value as 'technical' | 'billing' | 'appointment' | 'general' })}
                     title="Select category"
@@ -507,13 +591,12 @@ const SupportTickets: React.FC = () => {
                     <option value="appointment">Appointment</option>
                   </select>
                 </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Priority</span>
+                <div className="form-control flex flex-col mb-4">
+                  <label className="label mb-2">
+                    <span className="label-text text-gray-700 dark:text-gray-200 font-medium">Priority</span>
                   </label>
                   <select
-                    className="select select-bordered"
+                    className="select select-bordered border border-gray-300 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-400 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md px-4 py-2 w-full"
                     value={newTicketForm.priority}
                     onChange={(e) => setNewTicketForm({ ...newTicketForm, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' })}
                     title="Select priority"
@@ -524,21 +607,19 @@ const SupportTickets: React.FC = () => {
                     <option value="urgent">Urgent</option>
                   </select>
                 </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Description</span>
+                <div className="form-control flex flex-col mb-4">
+                  <label className="label mb-2">
+                    <span className="label-text text-gray-700 dark:text-gray-200 font-medium">Description</span>
                   </label>
                   <textarea
-                    className="textarea textarea-bordered h-32"
+                    className="textarea textarea-bordered h-32 border border-gray-300 focus:border-blue-600 dark:border-gray-700 dark:focus:border-blue-400 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md px-4 py-2 w-full"
                     placeholder="Provide detailed information about your issue..."
                     value={newTicketForm.description}
                     onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
                     required
                   />
                 </div>
-
-                <div className="modal-action">
+                <div className="modal-action flex justify-end gap-4">
                   <button
                     type="button"
                     className="btn btn-ghost"

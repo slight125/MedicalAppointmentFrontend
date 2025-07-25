@@ -23,6 +23,7 @@ export interface Payment {
   transaction_id: string
   payment_status: 'completed' | 'pending' | 'failed' | 'refunded'
   created_at: string
+  phone_number?: string
 }
 
 // Create Stripe payment session
@@ -67,3 +68,13 @@ export const getPaymentByAppointment = async (appointmentId: string): Promise<Pa
     return null
   }
 }
+
+export const updatePayment = async (id: string | number, data: any): Promise<any> => {
+  const response = await api.patch(`/payments/${id}`, data);
+  return response.data;
+};
+
+export const deletePayment = async (id: string | number): Promise<any> => {
+  const response = await api.delete(`/payments/${id}`);
+  return response.data;
+};

@@ -19,9 +19,9 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     // Redirect to appropriate dashboard based on role
     switch (user.role) {
       case 'admin':
-        return <Navigate to="/admin" replace />
+        return <Navigate to="/dashboard/admin" replace />
       case 'doctor':
-        return <Navigate to="/doctor" replace />
+        return <Navigate to="/dashboard/doctor" replace />
       default:
         return <Navigate to="/dashboard" replace />
     }

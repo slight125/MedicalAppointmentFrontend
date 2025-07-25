@@ -66,7 +66,7 @@ export default function Register() {
             <h2 className="text-base md:text-lg lg:text-xl 5xl:text-2xl 6xl:text-3xl font-semibold text-gray-800 dark:text-gray-100 mb-0.5 md:mb-1 drop-shadow-sm dark:drop-shadow-[0_0_3px_rgba(255,255,255,0.3)]">Create Account</h2>
             <p className="text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl text-gray-600 dark:text-gray-300">Join our healthcare platform</p>
           </div>          {/* Register Form */}
-          <div className="card bg-white/80 dark:bg-gray-900/80 shadow-[0_0_20px_rgba(99,102,241,0.3)] dark:shadow-[0_0_25px_rgba(99,102,241,0.5)] backdrop-blur-sm border border-indigo-200 dark:border-indigo-900/50 rounded-xl w-full transition-all duration-300 flex-1 overflow-hidden">
+          <div className="card bg-white dark:bg-gray-900 shadow-lg dark:shadow-[0_0_25px_rgba(99,102,241,0.5)] border border-gray-300 dark:border-indigo-900/50 rounded-xl w-full transition-all duration-300 flex-1 overflow-hidden">
             <div className="card-body p-2 md:p-3 lg:p-4 5xl:p-5 6xl:p-6 h-full overflow-y-auto">
               {error && (
                 <div className="alert mb-2 md:mb-3 lg:mb-4 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl border-l-4 border-l-rose-500 bg-rose-100/80 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200">
@@ -81,12 +81,12 @@ export default function Register() {
                     <span className="label-text font-medium text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl">First Name</span>
                   </label>
                   <div className="relative">
-                    <User className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 5xl:h-6 5xl:w-6 6xl:h-7 6xl:w-7 text-indigo-500 dark:text-cyan-400" />
+                    <User className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                     <input
                       {...register('firstname')}
                       type="text"
                       placeholder="First name"
-                      className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.firstname ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
                     />
@@ -105,12 +105,12 @@ export default function Register() {
                       <span className="label-text font-medium text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl">Last Name</span>
                     </label>
                     <div className="relative">
-                      <User className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 5xl:h-6 5xl:w-6 6xl:h-7 6xl:w-7 text-indigo-500 dark:text-cyan-400" />
+                      <User className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                       <input
                         {...register('lastname')}
                         type="text"
                         placeholder="Last name"
-                        className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                        className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                           errors.lastname ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                         }`}
                       />
@@ -131,12 +131,12 @@ export default function Register() {
                     <span className="label-text font-medium text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl">Email</span>
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 5xl:h-6 5xl:w-6 6xl:h-7 6xl:w-7 text-indigo-500 dark:text-cyan-400" />
+                    <Mail className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                     <input
                       {...register('email')}
                       type="email"
                       placeholder="Enter your email"
-                      className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      className={`input w-full pl-7 md:pl-8 lg:pl-10 5xl:pl-12 6xl:pl-16 h-8 md:h-9 lg:h-10 5xl:h-12 6xl:h-14 text-xs md:text-sm lg:text-base 5xl:text-lg 6xl:text-xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.email ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
                     />
@@ -156,12 +156,12 @@ export default function Register() {
                     <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Phone Number</span>
                   </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-indigo-500 dark:text-cyan-400" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                     <input
                       {...register('contact_phone')}
                       type="tel"
                       placeholder="Enter your phone number"
-                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.contact_phone ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
                     />
@@ -181,11 +181,11 @@ export default function Register() {
                     <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Address</span>
                   </label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-4 md:top-5 lg:top-6 5xl:top-7 6xl:top-8 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-indigo-500 dark:text-cyan-400" />
+                    <MapPin className="absolute left-3 top-4 h-5 w-5 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                     <textarea
                       {...register('address')}
                       placeholder="Enter your address"
-                      className={`textarea w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 min-h-12 md:min-h-14 lg:min-h-16 5xl:min-h-18 6xl:min-h-20 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      className={`textarea w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 min-h-12 md:min-h-14 lg:min-h-16 5xl:min-h-18 6xl:min-h-20 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.address ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
                       rows={1}
@@ -207,12 +207,12 @@ export default function Register() {
                       <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Password</span>
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-indigo-500 dark:text-cyan-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                       <input
                         {...register('password')}
                         type={showPassword ? 'text' : 'password'}
                         placeholder="Enter your password"
-                        className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                        className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                           errors.password ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                         }`}
                       />
@@ -242,12 +242,12 @@ export default function Register() {
                       <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Confirm Password</span>
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-indigo-500 dark:text-cyan-400" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-indigo-500 dark:text-cyan-400 pointer-events-none" />
                       <input
                         {...register('confirmPassword')}
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="Confirm your password"
-                        className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-indigo-300 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                        className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white dark:bg-gray-800 border-gray-400 dark:border-indigo-900 focus:border-indigo-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-indigo-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                           errors.confirmPassword ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                         }`}
                       />
@@ -310,22 +310,12 @@ export default function Register() {
         </div>
         
         {/* Illustration - Hidden on mobile, visible on lg screens and up */}
-        <div className="hidden lg:flex w-full lg:w-3/5 5xl:w-2/3 6xl:w-2/3 justify-center items-center mr-6 md:mr-8 lg:mr-10 xl:mr-12 2xl:mr-16 3xl:mr-20 4xl:mr-24 5xl:mr-28 6xl:mr-32">
-          <div className="relative w-full h-full p-3 md:p-4 lg:p-6 5xl:p-8 6xl:p-10 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.3)] dark:shadow-[0_0_25px_rgba(99,102,241,0.5)] border border-indigo-200 dark:border-indigo-900/50 transition-all duration-300">
-            <img 
-              src="https://cdn.jsdelivr.net/gh/gist/jeremybullock/2ea18c384dd2f136a5c1e2b6f628544b/raw/Patient-bro.svg" 
-              alt="Healthcare registration illustration" 
-              className="w-full h-auto max-h-[80vh] lg:max-h-[85vh] xl:max-h-[85vh] 2xl:max-h-[85vh] 3xl:max-h-[90vh] 4xl:max-h-[90vh] 5xl:max-h-[90vh] 6xl:max-h-[95vh] object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://cdn.jsdelivr.net/gh/gist/SethClydesdale/3dddf1a006d9406eff104d20adb95f7a/raw/Healthcare-amico.svg";
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-cyan-500/10 dark:from-indigo-500/20 dark:to-cyan-500/20 rounded-2xl"></div>
-            <div className="absolute bottom-2 md:bottom-3 lg:bottom-4 5xl:bottom-6 6xl:bottom-8 left-0 right-0 text-center text-base md:text-lg lg:text-xl 5xl:text-2xl 6xl:text-3xl text-gray-600 dark:text-gray-300 font-medium">
-              Join our community of health-conscious individuals
-            </div>
-          </div>
+        <div className="hidden lg:flex w-full lg:w-3/5 justify-center items-center mr-6 aspect-[4/3] min-h-[400px]">
+          <img 
+            src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=800&q=80"
+            alt="Doctors in hospital"
+            className="w-full h-full object-cover rounded-2xl shadow-lg border border-gray-200"
+          />
         </div>
       </div>
     </div>

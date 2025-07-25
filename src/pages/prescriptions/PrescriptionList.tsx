@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootState, AppDispatch } from '../../store'
-import { fetchUserPrescriptions } from '../../store/slices/prescriptionSlice'
+import { fetchUserPrescriptions, fetchDoctorPrescriptions, fetchAllPrescriptions } from '../../store/slices/prescriptionSlice'
 import { Clock, FileText, Pill, Download } from 'lucide-react'
 
 interface Medicine {
@@ -18,6 +18,10 @@ const PrescriptionList: React.FC = () => {
   useEffect(() => {
     if (user?.role === 'user') {
       dispatch(fetchUserPrescriptions())
+    } else if (user?.role === 'doctor') {
+      dispatch(fetchDoctorPrescriptions())
+    } else if (user?.role === 'admin') {
+      dispatch(fetchAllPrescriptions())
     }
   }, [dispatch, user])
 

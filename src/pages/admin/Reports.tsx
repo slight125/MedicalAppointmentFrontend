@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Calendar, Filter, TrendingUp, Users, DollarSign } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { downloadReport } from '../../utils/api';
 
 interface ReportData {
   id: string;
@@ -156,20 +157,16 @@ const AdminReports: React.FC = () => {
     }
   };
 
-  const handleDownloadReport = async (reportId: string) => {
+  const handleDownloadReport = async (reportType: string) => {
     try {
-      // Simulate download
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create a fake download
-      const element = document.createElement('a');
-      const file = new Blob(['Report data...'], { type: 'text/csv' });
-      element.href = URL.createObjectURL(file);
-      element.download = `report-${reportId}.csv`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-      
+      const res = await downloadReport(reportType);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${reportType}-report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       toast.success('Report downloaded successfully');
     } catch {
       toast.error('Failed to download report');
@@ -377,7 +374,7 @@ const AdminReports: React.FC = () => {
                   <div className="flex gap-2">
                     {report.status === 'ready' && (
                       <button
-                        onClick={() => handleDownloadReport(report.id)}
+                        onClick={() => handleDownloadReport(report.type)}
                         className="btn btn-sm btn-primary gap-2"
                         title="Download report"
                       >

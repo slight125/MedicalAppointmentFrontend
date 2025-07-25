@@ -21,13 +21,21 @@ export interface AuthState {
   isAuthenticated: boolean
 }
 
+const getInitialUser = () => {
+  if (typeof window !== 'undefined') {
+    const userStr = localStorage.getItem('user');
+    if (userStr) return JSON.parse(userStr);
+  }
+  return null;
+};
+
 const initialState: AuthState = {
-  user: null,
+  user: getInitialUser(),
   token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
   isLoading: false,
   error: null,
   isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('token') : false,
-}
+};
 
 // Async thunks
 export const loginUser = createAsyncThunk(
@@ -95,6 +103,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false
       state.error = null
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
     },
     clearError: (state) => {
       state.error = null
@@ -104,6 +113,7 @@ const authSlice = createSlice({
       state.token = action.payload.token
       state.isAuthenticated = true
       localStorage.setItem('token', action.payload.token)
+      localStorage.setItem('user', JSON.stringify(action.payload.user))
     },
   },
   extraReducers: (builder) => {
@@ -119,10 +129,16 @@ const authSlice = createSlice({
         state.token = action.payload.token
         state.isAuthenticated = true
         state.error = null
+        localStorage.setItem('user', JSON.stringify(action.payload.user))
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false
-        state.error = action.payload as string
+        // Always show a friendly error for 401
+        if (action.payload && typeof action.payload === 'string' && action.payload.toLowerCase().includes('401')) {
+          state.error = 'Invalid email or password.'
+        } else {
+          state.error = (action.payload as string) || 'Invalid email or password.'
+        }
         state.isAuthenticated = false
       })
       // Register

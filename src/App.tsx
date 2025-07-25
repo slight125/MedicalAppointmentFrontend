@@ -10,7 +10,7 @@ import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
 
 // Public Pages
-import Home from './pages/public/Home_New'
+import Home from './pages/public/Home'
 import About from './pages/public/About'
 import Services from './pages/public/Services'
 import Contact from './pages/public/Contact'
@@ -28,16 +28,19 @@ import AdminDashboard from './pages/admin/Dashboard'
 import AppointmentBooking from './pages/appointments/BookAppointment'
 import AppointmentList from './pages/appointments/AppointmentList'
 import PrescriptionList from './pages/prescriptions/PrescriptionList'
+import PrescriptionDetail from './pages/prescriptions/PrescriptionDetail'
 import PaymentHistory from './pages/payments/PaymentHistory'
 import PaymentSuccess from './pages/payments/PaymentSuccess'
 import PaymentCancel from './pages/payments/PaymentCancel'
 import MedicalHistory from './pages/medical-history/MedicalHistory'
 import SupportTickets from './pages/support/SupportTickets'
+import FindDoctors from './pages/dashboard/FindDoctors';
 
 // Admin Pages
 import AdminAnalytics from './pages/admin/Analytics'
 import AdminUserManagement from './pages/admin/UserManagement'
 import AdminReports from './pages/admin/Reports'
+import AdminSupport from './pages/admin/Support'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -53,8 +56,10 @@ function App() {
       // Apply theme to document
       if (savedTheme) {
         document.documentElement.classList.add('dark')
+        document.documentElement.setAttribute('data-theme', 'dark')
       } else {
         document.documentElement.classList.remove('dark')
+        document.documentElement.setAttribute('data-theme', 'light')
       }
     }
   }, [dispatch])
@@ -127,9 +132,19 @@ function App() {
           } />
 
           {/* Other Feature Routes */}
+          <Route path="find-doctors" element={
+            <ProtectedRoute allowedRoles={['user']}>
+              <FindDoctors />
+            </ProtectedRoute>
+          } />
           <Route path="prescriptions" element={
             <ProtectedRoute allowedRoles={['user', 'doctor', 'admin']}>
               <PrescriptionList />
+            </ProtectedRoute>
+          } />
+          <Route path="prescriptions/:appointmentId" element={
+            <ProtectedRoute allowedRoles={['user', 'doctor', 'admin']}>
+              <PrescriptionDetail />
             </ProtectedRoute>
           } />
           <Route path="medical-history" element={
@@ -162,6 +177,11 @@ function App() {
           <Route path="admin/reports" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminReports />
+            </ProtectedRoute>
+          } />
+          <Route path="admin/support" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminSupport />
             </ProtectedRoute>
           } />
         </Route>

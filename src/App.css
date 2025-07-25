@@ -11,6 +11,104 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
+/* Theme-aware variables for light/dark mode */
+:root {
+  --color-bg-light: #fff;
+  --color-bg-dark: #18181b;
+  --color-text-light: #222;
+  --color-text-dark: #f3f4f6;
+  --color-accent: #2563eb;
+  --color-status-active: #22c55e;
+  --color-status-inactive: #facc15;
+  --color-role-user: #18181b;
+  --color-role-doctor: #6366f1;
+  --color-role-admin: #f43f5e;
+}
+
+[data-theme="light"] {
+  --color-bg: var(--color-bg-light);
+  --color-text: var(--color-text-light);
+}
+
+[data-theme="dark"] {
+  --color-bg: var(--color-bg-dark);
+  --color-text: var(--color-text-dark);
+}
+
+.user-table {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.user-table th,
+.user-table td {
+  color: var(--color-text);
+}
+
+.user-role.user {
+  background: var(--color-role-user);
+  color: #fff;
+}
+.user-role.doctor {
+  background: var(--color-role-doctor);
+  color: #fff;
+}
+.user-role.admin {
+  background: var(--color-role-admin);
+  color: #fff;
+}
+
+.user-status.active {
+  background: var(--color-status-active);
+  color: #fff;
+}
+.user-status.inactive {
+  background: var(--color-status-inactive);
+  color: #222;
+}
+
+[data-theme="light"] {
+  --color-bg: var(--color-bg-light);
+  --color-text: var(--color-text-light);
+}
+
+[data-theme="dark"] {
+  --color-bg: var(--color-bg-dark);
+  --color-text: var(--color-text-dark);
+}
+
+.user-table {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.user-table th,
+.user-table td {
+  color: var(--color-text);
+}
+
+.user-role.user {
+  background: var(--color-role-user);
+  color: #fff;
+}
+.user-role.doctor {
+  background: var(--color-role-doctor);
+  color: #fff;
+}
+.user-role.admin {
+  background: var(--color-role-admin);
+  color: #fff;
+}
+
+.user-status.active {
+  background: var(--color-status-active);
+  color: #fff;
+}
+.user-status.inactive {
+  background: var(--color-status-inactive);
+  color: #222;
+}
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }

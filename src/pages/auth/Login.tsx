@@ -48,8 +48,15 @@ export default function Login() {
           navigate('/dashboard')
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed'
+      const errorMessage = error instanceof Error ? error.message : 'Invalid email or password.'
       toast.error(errorMessage)
+    }
+  }
+
+  // Clear error on input change
+  const handleInputChange = () => {
+    if (error) {
+      dispatch({ type: 'auth/clearError' })
     }
   }
 
@@ -70,7 +77,7 @@ export default function Login() {
           </div>
 
           {/* Login Form */}
-          <div className="card bg-white/80 dark:bg-gray-900/80 shadow-[0_0_20px_rgba(139,92,246,0.3)] dark:shadow-[0_0_25px_rgba(139,92,246,0.5)] backdrop-blur-sm border border-fuchsia-200 dark:border-fuchsia-900/50 rounded-xl w-full transition-all duration-300">
+          <div className="card bg-white dark:bg-gray-900 shadow-lg dark:shadow-[0_0_25px_rgba(139,92,246,0.5)] border border-gray-300 dark:border-fuchsia-900/50 rounded-xl w-full transition-all duration-300">
             <div className="card-body p-5 md:p-6 lg:p-8 5xl:p-10 6xl:p-12">
               {error && (
                 <div className="alert alert-error mb-3 md:mb-4 lg:mb-5 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl border-l-4 border-l-rose-500">
@@ -85,14 +92,15 @@ export default function Login() {
                     <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Email</span>
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-fuchsia-500 dark:text-cyan-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-fuchsia-500 dark:text-cyan-400 pointer-events-none" />
                     <input
                       {...register('email')}
                       type="email"
-                      placeholder="Enter your email"
-                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-fuchsia-300 dark:border-fuchsia-900 focus:border-fuchsia-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-fuchsia-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      placeholder="alice@example.com"
+                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white dark:bg-gray-800 border-gray-400 dark:border-fuchsia-900 focus:border-fuchsia-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-fuchsia-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.email ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
+                      onChange={handleInputChange}
                     />
                   </div>
                   {errors.email && (
@@ -110,14 +118,15 @@ export default function Login() {
                     <span className="label-text font-medium text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl">Password</span>
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 5xl:h-8 5xl:w-8 6xl:h-9 6xl:w-9 text-fuchsia-500 dark:text-cyan-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-fuchsia-500 dark:text-cyan-400 pointer-events-none" />
                     <input
                       {...register('password')}
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
-                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white/50 dark:bg-gray-800/50 border-fuchsia-300 dark:border-fuchsia-900 focus:border-fuchsia-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-fuchsia-500/30 dark:focus:ring-cyan-400/30 transition-colors ${
+                      className={`input w-full pl-10 md:pl-12 lg:pl-14 5xl:pl-16 6xl:pl-20 pr-10 md:pr-12 lg:pr-14 5xl:pr-16 6xl:pr-20 h-11 md:h-12 lg:h-14 5xl:h-16 6xl:h-18 text-sm md:text-base lg:text-lg 5xl:text-xl 6xl:text-2xl bg-white dark:bg-gray-800 border-gray-400 dark:border-fuchsia-900 focus:border-fuchsia-500 dark:focus:border-cyan-400 focus:ring-2 focus:ring-fuchsia-500/30 dark:focus:ring-cyan-400/30 text-gray-800 dark:text-white transition-colors ${
                         errors.password ? 'border-rose-500 dark:border-rose-600 focus:border-rose-500 dark:focus:border-rose-600 focus:ring-rose-500/30 dark:focus:ring-rose-600/30' : ''
                       }`}
+                      onChange={handleInputChange}
                     />
                     <button
                       type="button"
@@ -177,22 +186,16 @@ export default function Login() {
         </div>
         
         {/* Illustration - Hidden on mobile, visible on lg screens and up */}
-        <div className="hidden lg:flex w-full lg:w-3/5 5xl:w-2/3 6xl:w-2/3 justify-center items-center ml-6 md:ml-8 lg:ml-10 xl:ml-12 2xl:ml-16 3xl:ml-20 4xl:ml-24 5xl:ml-28 6xl:ml-32">
-          <div className="relative w-full h-full p-6 md:p-8 lg:p-10 5xl:p-12 6xl:p-16 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] dark:shadow-[0_0_25px_rgba(139,92,246,0.5)] border border-fuchsia-200 dark:border-fuchsia-900/50 transition-all duration-300">
-            <img 
-              src="https://cdn.jsdelivr.net/gh/gist/yuhongda0315/5f5476c427ea67a01e8c580ee580ce6f/raw/c2aa4e744a0bd64d7a1c89cd013c8245d6c0f748/undraw_medicine_b-1-ol.svg" 
-              alt="Healthcare illustration" 
-              className="w-full h-auto max-h-[60vh] lg:max-h-[65vh] xl:max-h-[70vh] 2xl:max-h-[75vh] 3xl:max-h-[80vh] 4xl:max-h-[85vh] 5xl:max-h-[90vh] 6xl:max-h-[95vh] object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://cdn.jsdelivr.net/gh/gist/SethClydesdale/085b7e87a9d05fbd8e941c86ef0fdd1c/raw/Healthcare-rafiki.svg";
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-cyan-500/10 dark:from-fuchsia-500/20 dark:to-cyan-500/20 rounded-2xl"></div>
-            <div className="absolute bottom-6 md:bottom-8 lg:bottom-10 5xl:bottom-12 6xl:bottom-16 left-0 right-0 text-center text-base md:text-lg lg:text-xl 5xl:text-2xl 6xl:text-3xl text-gray-600 dark:text-gray-300 font-medium">
-              Quality healthcare at your fingertips
-            </div>
-          </div>
+        <div className="hidden lg:flex w-full lg:w-3/5 justify-center items-center ml-6 aspect-[4/3] min-h-[400px]">
+          <img 
+            src="https://undraw.org/illustrations/svg/undraw_medicine_b1ol.svg" 
+            alt="Login medical illustration" 
+            className="w-full h-full object-cover rounded-2xl shadow-lg border border-gray-200"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&w=800";
+            }}
+          />
         </div>
       </div>
     </div>
