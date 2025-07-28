@@ -110,7 +110,7 @@ const PrescriptionList: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto px-6 lg:px-12 xl:px-16 2xl:px-20 py-6 lg:py-8 xl:py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-950 dark:to-blue-950 min-h-screen">
+    <div className="max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-6 text-xs sm:text-base">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 lg:mb-12 xl:mb-16 gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 dark:text-white mb-4 lg:mb-6 leading-tight tracking-tight drop-shadow-md">

@@ -224,11 +224,11 @@ const SupportTickets: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 bg-white dark:bg-gray-900 min-h-screen">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-blue-700 dark:text-blue-300">Support Tickets</h1>
-      <p className="mb-6 text-blue-600 dark:text-blue-200">Get help and support for your medical care</p>
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8 bg-white dark:bg-gray-900 min-h-screen text-xs sm:text-base">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 text-blue-700 dark:text-blue-300">Support Tickets</h1>
+      <p className="mb-4 sm:mb-6 text-blue-600 dark:text-blue-200">Get help and support for your medical care</p>
       {/* Search & Filter Bar */}
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-xl shadow p-6 mb-8 border border-gray-200 dark:border-gray-700 flex flex-col md:flex-row md:items-center gap-4">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-xl shadow p-2 sm:p-6 mb-4 sm:mb-8 border border-gray-200 dark:border-gray-700 flex flex-col md:flex-row md:items-center gap-2 sm:gap-4">
         <div className="flex-1 flex items-center gap-2">
           <Search className="w-5 h-5 text-blue-500" />
                   <input

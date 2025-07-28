@@ -175,9 +175,9 @@ export default function BookAppointment() {
   }
 
   return (
-    <div className="p-6 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
+    <div className="p-2 sm:p-6 max-w-2xl sm:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto text-xs sm:text-base">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-4 sm:mb-8">
         <button
           onClick={() => navigate(-1)}
           className="btn btn-ghost btn-sm gap-2 mb-4"
@@ -189,11 +189,11 @@ export default function BookAppointment() {
         <p className="text-sm text-gray-600">Schedule your appointment with our healthcare professionals</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Booking Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="bg-white rounded-lg shadow-md p-2 sm:p-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
               {/* Doctor Selection */}
               <label className="label">
                 <span className="label-text font-medium flex items-center gap-2">

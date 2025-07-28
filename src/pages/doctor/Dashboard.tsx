@@ -92,7 +92,7 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-10 text-xs sm:text-base">
       {/* Welcome Header */}
       <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-8 shadow text-white mb-8 border border-blue-700 dark:border-blue-900">
         <div className="flex justify-between items-center">
@@ -107,7 +107,7 @@ export default function DoctorDashboard() {
         </div>
       </div>
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700">
           <div className="text-2xl font-bold text-blue-400">{appointments.length}</div>
           <div className="text-gray-300">Today's Appointments</div>
@@ -126,10 +126,10 @@ export default function DoctorDashboard() {
         </div>
       </div>
       {/* Appointments Table */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Today's Appointments</h2>
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow mb-6 sm:mb-8 border border-gray-700">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">Today's Appointments</h2>
         <div className="overflow-x-auto">
-          <table className="table w-full">
+          <table className="table w-full text-xs sm:text-base">
             <thead>
               <tr>
                 <th>Patient</th>
@@ -154,9 +154,9 @@ export default function DoctorDashboard() {
         </div>
       </div>
       {/* Performance */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">This Week</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow mb-6 sm:mb-8 border border-gray-700">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">This Week</h2>
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
           <div className="text-center">
             <span className="text-sm text-gray-400">Patients Seen</span>
             <div className="font-medium text-blue-400 text-2xl">{performance.patientsSeen}</div>
@@ -181,9 +181,9 @@ export default function DoctorDashboard() {
         </div>
       </div>
       {/* Notifications */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow border border-gray-700">
-        <h3 className="text-lg font-semibold mb-4 text-white border-b border-gray-700 pb-2">Notifications</h3>
-        <div className="space-y-3">
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow border border-gray-700">
+        <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">Notifications</h3>
+        <div className="space-y-2 sm:space-y-3">
           {notifications.labResults && notifications.labResults.map((lab: any, idx: number) => (
             <div key={idx} className="flex items-center gap-3 p-3 bg-blue-800/40 rounded-lg border border-blue-900">
               <CheckCircle className="w-4 h-4 text-green-400" />
@@ -202,9 +202,9 @@ export default function DoctorDashboard() {
         </div>
       </div>
       {/* Doctor Fee Section */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Consultation Fee</h2>
-        <div className="flex items-center gap-4">
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow mb-6 sm:mb-8 border border-gray-700">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">Consultation Fee</h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
           {feeEdit ? (
             <>
               <input

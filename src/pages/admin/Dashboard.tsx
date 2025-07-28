@@ -113,10 +113,10 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-xs sm:text-base">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-10">
         {/* Welcome Header */}
-        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-8 shadow text-white mb-8 border border-blue-700 dark:border-blue-900">
+        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-4 sm:p-8 shadow text-white mb-6 sm:mb-8 border border-blue-700 dark:border-blue-900">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-semibold mb-2">Welcome back, Admin!</h1>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
           </div>
         </div>
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-6 shadow text-center border border-gray-700 dark:border-gray-800">
             <div className="text-2xl font-bold text-blue-400">{stats.users}</div>
             <div className="text-gray-300">Total Users</div>
@@ -146,13 +146,13 @@ export default function AdminDashboard() {
 
       {/* Pending Actions Alert */}
       {pendingActions.length > 0 ? (
-        <div className="mb-6">
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+        <div className="mb-4 sm:mb-6">
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-2 sm:p-3">
             <div className="flex items-center gap-2 mb-2">
               <AlertTriangle className="w-4 h-4 text-yellow-600" />
               <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Pending Actions</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
               {pendingActions.map((action) => (
                 <div key={action.id} className="bg-white dark:bg-gray-900 rounded-lg p-2 border border-yellow-200 dark:border-yellow-700">
                   <div className="flex items-center justify-between">
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
         <div className="mb-6 text-gray-500 dark:text-gray-400 text-center">No pending actions.</div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
 
         {/* Recent Activity */}
         <div className="lg:col-span-2">
@@ -204,9 +204,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <div className="mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
         {/* Revenue Chart Placeholder */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-2 sm:p-4">
           <div className="flex items-center justify-center mb-3">
             <TrendingUp className="w-4 h-4 text-green-500 mr-2" />
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Revenue Trend</h3>
@@ -226,7 +226,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* User Growth Chart Placeholder */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-2 sm:p-4">
           <div className="flex items-center justify-center mb-3">
             <Users className="w-4 h-4 text-blue-500 mr-2" />
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">User Growth</h3>

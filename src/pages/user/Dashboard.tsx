@@ -60,7 +60,7 @@ export default function UserDashboard() {
     .slice(0, 2);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-10 text-xs sm:text-base">
       {/* Welcome Header */}
       <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-8 shadow text-white mb-8 border border-blue-700">
         <div className="flex justify-between items-center">
@@ -77,7 +77,7 @@ export default function UserDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="flex justify-center flex-wrap gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-center flex-wrap gap-2 sm:gap-4 mb-6 sm:mb-8">
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow"
           onClick={() => window.location.href = '/dashboard/appointments/book'}
@@ -99,16 +99,16 @@ export default function UserDashboard() {
       </div>
 
       {/* Stats Overview */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700 w-64">
+      <div className="flex justify-center mb-6 sm:mb-8">
+        <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow text-center border border-gray-700 w-48 sm:w-64 text-xs sm:text-base">
           <div className="text-2xl font-bold text-blue-400">{apptLoading ? '...' : todaysAppointments.length}</div>
           <div className="text-gray-300">Today's Appointments</div>
         </div>
       </div>
 
       {/* Recent/Upcoming Appointments */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow mb-6 sm:mb-8 border border-gray-700">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">
           {futureAppointments.length > 0 ? 'Upcoming Appointments' : 'Recent Appointments'}
         </h2>
         <div className="space-y-4">
@@ -117,7 +117,7 @@ export default function UserDashboard() {
           ) : upcomingAppointments.length === 0 ? (
             <div className="text-gray-400">No upcoming appointments.</div>
           ) : upcomingAppointments.map((appt) => (
-            <div key={appt.appointment_id} className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
+            <div key={appt.appointment_id} className="bg-white p-2 sm:p-4 rounded-xl shadow flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-base">
               <div className="flex items-center gap-4">
                 <Calendar className="text-green-500 w-6 h-6" />
                 <div>
@@ -138,15 +138,15 @@ export default function UserDashboard() {
       </div>
 
       {/* Recent Prescriptions */}
-      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
-        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Recent Prescriptions</h2>
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow mb-6 sm:mb-8 border border-gray-700">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-white border-b border-gray-700 pb-1 sm:pb-2">Recent Prescriptions</h2>
         <div className="space-y-4">
           {prescLoading ? (
             <div className="text-gray-400">Loading...</div>
           ) : recentPrescriptions.length === 0 ? (
             <div className="text-gray-400">No recent prescriptions.</div>
           ) : recentPrescriptions.map((presc) => (
-            <div key={presc.prescription_id} className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
+            <div key={presc.prescription_id} className="bg-white p-2 sm:p-4 rounded-xl shadow flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs sm:text-base">
               <div className="flex items-center gap-4">
                 <FileText className="text-blue-500 w-6 h-6" />
                 <div>

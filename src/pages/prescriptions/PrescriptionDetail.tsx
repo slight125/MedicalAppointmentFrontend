@@ -18,7 +18,7 @@ const PrescriptionDetail: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 text-xs sm:text-base">
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
         </div>
@@ -28,7 +28,7 @@ const PrescriptionDetail: React.FC = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 text-xs sm:text-base">
         <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4">
           <p className="text-red-800 dark:text-red-200">Error loading prescription: {error}</p>
         </div>
@@ -38,7 +38,7 @@ const PrescriptionDetail: React.FC = () => {
 
   if (!currentPrescription) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 text-xs sm:text-base">
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center">
           <p className="text-gray-700 dark:text-gray-200">No prescription found for this appointment.</p>
         </div>
@@ -51,7 +51,7 @@ const PrescriptionDetail: React.FC = () => {
     : (() => { try { return JSON.parse(currentPrescription.medicines as string); } catch { return []; } })();
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 text-xs sm:text-base">
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
         <h2 className="text-3xl font-bold mb-4 dark:text-gray-100">Prescription Details</h2>
         <div className="mb-4">

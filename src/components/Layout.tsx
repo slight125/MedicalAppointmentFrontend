@@ -74,13 +74,13 @@ export default function Layout() {
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden" // z-50 to ensure overlay is above all
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar - Always visible on desktop, collapsible on mobile */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+      <div className={`fixed inset-y-0 left-0 z-60 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
@@ -156,7 +156,7 @@ export default function Layout() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="fixed top-4 left-4 z-30 p-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors lg:hidden"
+            className="fixed top-4 left-4 z-70 p-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors lg:hidden"
             title="Open sidebar"
             aria-label="Open navigation menu"
           >

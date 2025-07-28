@@ -179,19 +179,19 @@ const MedicalHistory: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 min-h-screen bg-white dark:bg-gray-900">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+    <div className="max-w-5xl mx-auto px-2 sm:px-4 py-4 sm:py-8 min-h-screen bg-white dark:bg-gray-900 text-xs sm:text-base">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 sm:mb-8 gap-2 sm:gap-4">
         <div>
-          <h1 className="text-4xl font-bold mb-2 text-purple-700 dark:text-purple-400 flex items-center gap-3">
-            <FileText className="h-10 w-10 text-purple-400 dark:text-purple-300" />
+          <h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2 text-purple-700 dark:text-purple-400 flex items-center gap-2 sm:gap-3">
+            <FileText className="h-8 w-8 sm:h-10 sm:w-10 text-purple-400 dark:text-purple-300" />
             Medical History
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">View and manage medical records and history</p>
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">View and manage medical records and history</p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="btn btn-outline btn-primary px-4 py-2 rounded-lg shadow flex items-center gap-2"
+          className="btn btn-outline btn-primary px-2 sm:px-4 py-1 sm:py-2 rounded-lg shadow flex items-center gap-1 sm:gap-2"
           title="Refresh medical history"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -199,8 +199,8 @@ const MedicalHistory: React.FC = () => {
         </button>
       </div>
       
-      <div className="flex items-center gap-2 mb-8">
-        <Search className="w-6 h-6 text-gray-500 dark:text-gray-300" />
+      <div className="flex items-center gap-1 sm:gap-2 mb-4 sm:mb-8">
+        <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500 dark:text-gray-300" />
         <input
           type="text"
           className="input input-bordered w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"

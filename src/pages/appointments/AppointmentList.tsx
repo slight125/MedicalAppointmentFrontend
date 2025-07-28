@@ -136,9 +136,9 @@ export default function AppointmentList() {
   }
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto px-4 lg:px-8 xl:px-12 py-4 lg:py-6">
+    <div className="w-full max-w-screen-2xl mx-auto px-2 sm:px-4 lg:px-8 xl:px-12 py-2 sm:py-4 lg:py-6 text-xs sm:text-base">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4 lg:mb-6 gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2 sm:mb-4 lg:mb-6 gap-2 sm:gap-4">
         <div className="mb-2 lg:mb-0">
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">Appointments</h1>
           <p className="text-gray-600 dark:text-gray-300 text-sm lg:text-base">
@@ -151,7 +151,7 @@ export default function AppointmentList() {
         {user?.role === 'user' && (
           <button
             onClick={() => navigate('/dashboard/appointments/book')}
-            className="btn btn-primary gap-2 px-6 py-3 text-sm lg:text-base w-full lg:w-auto"
+            className="btn btn-primary gap-2 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm lg:text-base w-full lg:w-auto"
           >
             <Plus className="w-4 h-4" />
             Book Appointment
