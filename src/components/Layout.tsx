@@ -156,7 +156,7 @@ export default function Layout() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="fixed top-4 left-4 z-70 p-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors lg:hidden"
+            className="fixed top-4 left-4 z-[110] p-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors lg:hidden"
             title="Open sidebar"
             aria-label="Open navigation menu"
           >
