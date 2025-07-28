@@ -20,6 +20,7 @@ export default function Navbar() {
   ]
 
   const isActive = (path: string) => location.pathname === path
+  const isDashboard = location.pathname.startsWith('/dashboard');
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-lg sticky top-0 z-50 transition-colors duration-300 w-full">
@@ -93,19 +94,21 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            {/* Mobile Menu Button - hide on dashboard pages */}
+            {!isDashboard && (
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
+        {/* Mobile Menu - hide on dashboard pages */}
+        {!isDashboard && isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t dark:border-gray-700">
               {navItems.map((item) => (
@@ -122,7 +125,6 @@ export default function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              
               {/* Mobile Auth Links */}
               <div className="pt-4 border-t dark:border-gray-700">
                 {isAuthenticated ? (
