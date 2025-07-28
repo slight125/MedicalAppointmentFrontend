@@ -5,7 +5,7 @@ import { Heart, Moon, Sun, Menu, X, User } from 'lucide-react'
 import { toggleDarkMode } from '../store/slices/themeSlice'
 import type { RootState } from '../store'
 
-export default function Navbar() {
+export default function Navbar({ onSidebarOpen }: { onSidebarOpen?: () => void }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { darkMode } = useSelector((state: RootState) => state.theme)
   const { isAuthenticated } = useSelector((state: RootState) => state.auth)
@@ -26,15 +26,27 @@ export default function Navbar() {
     <nav className="bg-white dark:bg-gray-900 shadow-lg sticky top-0 z-50 transition-colors duration-300 w-full">
       <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:px-24 4xl:px-32 5xl:px-48 6xl:px-64 max-w-[100%]">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-blue-600 dark:bg-blue-500 rounded-full p-2">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
-              MediCare
-            </span>
-          </Link>
+          {/* Left: Hamburger (dashboard only) + Logo */}
+          <div className="flex items-center gap-2">
+            {isDashboard && onSidebarOpen && (
+              <button
+                onClick={onSidebarOpen}
+                className="mr-1 p-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors lg:hidden"
+                title="Open sidebar"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            )}
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="bg-blue-600 dark:bg-blue-500 rounded-full p-2">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                MediCare
+              </span>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAppSelector, useAppDispatch } from './store'
 import { Toaster } from 'react-hot-toast'
 import { setDarkMode } from './store/slices/themeSlice'
@@ -48,6 +48,8 @@ function App() {
   const dispatch = useAppDispatch()
   const authState = useAppSelector((state) => state.auth)
   const { isAuthenticated, user, isLoading } = authState
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith('/dashboard');
 
   useEffect(() => {
     // Initialize theme from localStorage
@@ -79,7 +81,7 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      {isDashboard ? null : <Navbar />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -101,7 +103,9 @@ function App() {
         {/* Protected Routes with Layout */}
         <Route path="/dashboard" element={
           <ProtectedRoute allowedRoles={['user', 'doctor', 'admin']}>
-            <Layout />
+            <Layout navbarSidebarControl>
+              {(handleSidebarOpen: () => void) => <Navbar onSidebarOpen={handleSidebarOpen} />}
+            </Layout>
           </ProtectedRoute>
         }>
           {/* Dashboard Routes */}

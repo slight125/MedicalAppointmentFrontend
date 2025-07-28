@@ -17,7 +17,7 @@ import {
 import { useState } from 'react'
 import { logout } from '../store/slices/authSlice'
 
-export default function Layout() {
+export default function Layout({ navbarSidebarControl, children }: { navbarSidebarControl?: boolean, children?: (handleSidebarOpen: () => void) => React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const auth = useSelector((state: RootState) => state.auth)
   const { user } = auth
@@ -69,23 +69,13 @@ export default function Layout() {
 
   const navigationItems = getNavigationItems()
 
+  // Expose sidebar open handler for Navbar
+  const handleSidebarOpen = () => setIsSidebarOpen(true);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header row: Hamburger + Logo */}
-      <div className="flex items-center px-2 py-2 bg-white dark:bg-gray-900">
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="mr-2 z-[130] p-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
-          title="Open sidebar"
-          aria-label="Open navigation menu"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-        <span className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-          <Heart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          MediCare
-        </span>
-      </div>
+      {children && children(handleSidebarOpen)}
+      {/* Removed custom header row for hamburger + logo. Navbar will handle this. */}
 
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
