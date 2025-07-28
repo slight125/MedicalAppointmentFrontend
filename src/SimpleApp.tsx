@@ -4,7 +4,6 @@ import { useAppDispatch } from './store'
 import { setDarkMode } from './store/slices/themeSlice'
 import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
-import SimpleHome from './pages/public/SimpleHome'
 import About from './pages/public/About'
 import Services from './pages/public/Services'
 import Contact from './pages/public/Contact'
@@ -31,7 +30,7 @@ function SimpleApp() {
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<SimpleHome />} />
+        <Route path="/" element={<About />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />

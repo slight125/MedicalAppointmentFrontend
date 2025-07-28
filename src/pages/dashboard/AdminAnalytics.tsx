@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie,
   Cell, Legend, LineChart, Line, CartesianGrid, AreaChart, Area
 } from "recharts";
-import { DateRangePicker } from "@types/react-date-range";
+import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import api from "../../utils/api";
@@ -25,10 +25,24 @@ const AdminAnalytics: React.FC = () => {
     key: "selection"
   });
   const [loading, setLoading] = useState(true);
-  const [activeChart, setActiveChart] = useState("appointments");
+  const [topDoctors, setTopDoctors] = useState<any[]>([]);
+  const [topDiagnoses, setTopDiagnoses] = useState<any[]>([]);
+  const [revenueByDoctor, setRevenueByDoctor] = useState<any[]>([]);
+  const [ticketResolution, setTicketResolution] = useState<{ averageHours: number, count: number } | null>(null);
 
   useEffect(() => {
     fetchAnalyticsData();
+    api.get('/admin/analytics/top-doctors')
+      .then(res => setTopDoctors(res.data.map((doc: any) => ({ ...doc, fullName: `${doc.first_name} ${doc.last_name}` }))))
+      .catch(() => setTopDoctors([]));
+    api.get('/admin/analytics/top-diagnoses')
+      .then(res => setTopDiagnoses(res.data))
+      .catch(() => setTopDiagnoses([]));
+    api.get('/admin/analytics/revenue-by-doctor')
+      .then(res => setRevenueByDoctor(res.data.map((doc: any) => ({ ...doc, fullName: `${doc.first_name} ${doc.last_name}` })))); // No .catch() needed
+    api.get('/admin/analytics/ticket-resolution-time')
+      .then(res => setTicketResolution(res.data))
+      .catch(() => setTicketResolution(null));
   }, [dateRange]);
 
   const fetchAnalyticsData = async () => {
@@ -76,10 +90,10 @@ const AdminAnalytics: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 py-8 px-4 md:px-10">
+    <div className="min-h-screen bg-base-200 dark:bg-gray-900 py-8 px-4 md:px-10">
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-primary">Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold text-primary dark:text-blue-400">Analytics Dashboard</h1>
           <button
             onClick={handleExport}
             className="btn btn-primary"
@@ -88,17 +102,17 @@ const AdminAnalytics: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-base-100 rounded-xl p-4 shadow-lg">
+        <div className="bg-base-100 dark:bg-gray-900 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-gray-800">
           <DateRangePicker
             ranges={[dateRange]}
-            onChange={item => setDateRange(item.selection)}
+            onChange={(item: any) => setDateRange(item.selection)}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Appointments Chart */}
-          <div className="bg-base-100 rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Appointments Trend</h2>
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Appointments Trend</h2>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={data?.appointments}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -111,8 +125,8 @@ const AdminAnalytics: React.FC = () => {
           </div>
 
           {/* Revenue Chart */}
-          <div className="bg-base-100 rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Revenue Overview</h2>
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Revenue Overview</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={data?.revenue}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -125,8 +139,8 @@ const AdminAnalytics: React.FC = () => {
           </div>
 
           {/* Payment Status */}
-          <div className="bg-base-100 rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Payment Status</h2>
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Payment Status</h2>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -138,7 +152,7 @@ const AdminAnalytics: React.FC = () => {
                   outerRadius={80}
                   label
                 >
-                  {data?.payments.map((entry, index) => (
+                  {data?.payments.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -149,8 +163,8 @@ const AdminAnalytics: React.FC = () => {
           </div>
 
           {/* User Growth */}
-          <div className="bg-base-100 rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">User Growth</h2>
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">User Growth</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data?.userGrowth}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -160,6 +174,57 @@ const AdminAnalytics: React.FC = () => {
                 <Bar dataKey="count" fill="#f59e42" />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Top Doctors by Appointments */}
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Top Doctors by Appointments</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={topDoctors} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" dataKey="appointmentCount" />
+                <YAxis type="category" dataKey="fullName" width={150} />
+                <Tooltip />
+                <Bar dataKey="appointmentCount" fill="#6366f1" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Most Common Diagnoses</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={topDiagnoses} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" dataKey="count" />
+                <YAxis type="category" dataKey="diagnosis" width={200} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#22d3ee" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Revenue by Doctor</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={revenueByDoctor} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" dataKey="revenue" />
+                <YAxis type="category" dataKey="fullName" width={150} />
+                <Tooltip />
+                <Bar dataKey="revenue" fill="#10b981" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-base-100 dark:bg-white/5 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Ticket Resolution Time</h2>
+            {ticketResolution ? (
+              <div className="text-lg font-bold text-blue-700 dark:text-blue-400">
+                Average Resolution Time: {ticketResolution.averageHours.toFixed(2)} hours ({ticketResolution.count} tickets)
+              </div>
+            ) : (
+              <div className="text-gray-400 dark:text-gray-500">No data available.</div>
+            )}
           </div>
         </div>
       </div>

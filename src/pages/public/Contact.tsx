@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import toast from 'react-hot-toast'
 import { 
   Phone, 
   Mail, 
@@ -10,34 +14,40 @@ import {
   FileText
 } from 'lucide-react'
 
+const contactSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email'),
+  subject: z.string().min(5, 'Subject must be at least 5 characters'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+})
+
+type ContactFormData = z.infer<typeof contactSchema>
+
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    })
-    // Show success message
-    alert('Thank you for your message! We will get back to you soon.')
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log('Form submitted:', data)
+      toast.success('Thank you for your message! We will get back to you soon.')
+      reset()
+    } catch (error) {
+      toast.error('Failed to send message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactInfo = [
@@ -163,7 +173,7 @@ export default function Contact() {
               <h2 className="text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-bold text-gray-900 dark:text-white mb-6 lg:mb-8 xl:mb-10">
                 Send us a Message
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6 xl:space-y-8">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 lg:space-y-6 xl:space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 xl:gap-8">
                   <div>
                     <label htmlFor="name" className="block text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-gray-700 dark:text-gray-300 mb-2 lg:mb-3 xl:mb-4">
@@ -172,13 +182,11 @@ export default function Contact() {
                     <input
                       type="text"
                       id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
+                      {...register('name')}
                       className="w-full px-4 lg:px-6 xl:px-8 py-3 lg:py-4 xl:py-5 2xl:py-6 text-base lg:text-lg xl:text-xl 2xl:text-2xl border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                       placeholder="Enter your full name"
                     />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-gray-700 dark:text-gray-300 mb-2 lg:mb-3 xl:mb-4">
@@ -187,13 +195,11 @@ export default function Contact() {
                     <input
                       type="email"
                       id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
+                      {...register('email')}
                       className="w-full px-4 lg:px-6 xl:px-8 py-3 lg:py-4 xl:py-5 2xl:py-6 text-base lg:text-lg xl:text-xl 2xl:text-2xl border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                       placeholder="Enter your email address"
                     />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                   </div>
                 </div>
                 <div>
@@ -202,10 +208,7 @@ export default function Contact() {
                   </label>
                   <select
                     id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
+                    {...register('subject')}
                     className="w-full px-4 lg:px-6 xl:px-8 py-3 lg:py-4 xl:py-5 2xl:py-6 text-base lg:text-lg xl:text-xl 2xl:text-2xl border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
                     <option value="">Select a subject</option>
@@ -216,6 +219,7 @@ export default function Contact() {
                     <option value="complaint">Complaint</option>
                     <option value="other">Other</option>
                   </select>
+                  {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>}
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-gray-700 dark:text-gray-300 mb-2 lg:mb-3 xl:mb-4">
@@ -223,21 +227,27 @@ export default function Contact() {
                   </label>
                   <textarea
                     id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
+                    {...register('message')}
                     rows={6}
                     className="w-full px-4 lg:px-6 xl:px-8 py-3 lg:py-4 xl:py-5 2xl:py-6 text-base lg:text-lg xl:text-xl 2xl:text-2xl border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                     placeholder="Enter your message here..."
                   />
+                  {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>}
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 lg:py-4 xl:py-5 2xl:py-6 px-6 lg:px-8 xl:px-10 2xl:px-12 text-base lg:text-lg xl:text-xl 2xl:text-2xl rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 lg:gap-3 xl:gap-4"
+                  disabled={isSubmitting}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 lg:py-4 xl:py-5 2xl:py-6 px-6 lg:px-8 xl:px-10 2xl:px-12 text-base lg:text-lg xl:text-xl 2xl:text-2xl rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 lg:gap-3 xl:gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8" />
-                  Send Message
+                  {isSubmitting ? (
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <Send className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8" />
+                  )}
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>

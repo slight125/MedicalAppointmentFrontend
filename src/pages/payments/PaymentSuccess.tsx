@@ -24,7 +24,7 @@ export default function PaymentSuccess() {
 
       try {
         await confirmPayment({
-          appointment_id: appointmentId,
+          appointment_id: Number(appointmentId),
           amount: parseFloat(amount),
           transaction_id: sessionId,
           payment_status: 'completed'

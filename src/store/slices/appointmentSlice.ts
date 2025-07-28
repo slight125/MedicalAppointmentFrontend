@@ -105,6 +105,9 @@ const appointmentSlice = createSlice({
     setCurrentAppointment: (state, action) => {
       state.currentAppointment = action.payload
     },
+    setAppointments: (state, action) => {
+      state.appointments = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -153,5 +156,5 @@ const appointmentSlice = createSlice({
   },
 })
 
-export const { clearError, setCurrentAppointment } = appointmentSlice.actions
+export const { clearError, setCurrentAppointment, setAppointments } = appointmentSlice.actions
 export default appointmentSlice.reducer

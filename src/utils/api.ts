@@ -56,7 +56,7 @@ export const fetchUserComplaints = async () => {
 };
 
 export const fetchAdminComplaints = async () => {
-  return api.get('/support'); // For admin, returns all
+  return api.get('/support/all');
 };
 
 export const submitComplaint = async (data: { related_appointment_id?: number; subject: string; description: string; category?: string; priority?: string }) => {
@@ -65,6 +65,10 @@ export const submitComplaint = async (data: { related_appointment_id?: number; s
 
 export const deleteComplaint = async (id: string | number) => {
   return api.delete(`/support/${id}`);
+};
+
+export const updateComplaintStatus = async (id: string | number, status: string) => {
+  return api.patch(`/support/${id}/status`, { status });
 };
 
 export const fetchMedicalHistory = async () => {
@@ -89,6 +93,22 @@ export const fetchAllUsers = async () => {
 };
 export const downloadReport = async (type: string) => {
   return api.get(`/admin/reports/${type}.csv`, { responseType: 'blob' });
+};
+
+export const updateUser = async (id: string | number, data: any) => {
+  return api.patch(`/admin/users/${id}`, data);
+};
+
+export const deleteUser = async (id: string | number) => {
+  return api.delete(`/admin/users/${id}`);
+};
+
+export const fetchComplaintMessages = async (id: string | number) => {
+  return api.get(`/support/${id}/messages`);
+};
+
+export const addComplaintMessage = async (id: string | number, message: string) => {
+  return api.post(`/support/${id}/messages`, { message });
 };
 
 export default api

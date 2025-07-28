@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { CreditCard, Loader2, Smartphone } from 'lucide-react'
 import { createPaymentSession } from '../utils/paymentApi'
-import axios from 'axios'
+import { api } from '../utils/api'
 import toast from 'react-hot-toast'
 
 interface PaymentButtonProps {
-  appointmentId: string
+  appointmentId: number
   amount: number
   doctor?: { first_name: string; last_name: string }
   className?: string
@@ -19,7 +19,6 @@ export default function PaymentButton({
   doctor,
   className = '',
   size = 'md',
-  variant = 'primary'
 }: PaymentButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showMpesa, setShowMpesa] = useState(false)
@@ -44,7 +43,7 @@ export default function PaymentButton({
   const handleMpesaPayment = async () => {
     setIsLoading(true)
     try {
-      await axios.post('/api/mpesa/stkpush', {
+      await api.post('/mpesa/stkpush', {
         phone,
         amount,
         appointment_id: appointmentId
@@ -89,7 +88,7 @@ export default function PaymentButton({
           ) : (
             <CreditCard className="w-4 h-4 mr-2" />
           )}
-          {isLoading ? 'Processing...' : `Pay with Stripe ($${amount.toFixed(2)})`}
+          {isLoading ? 'Processing...' : `Pay with Stripe (Ksh ${amount.toLocaleString()})`}
         </button>
         <button
           onClick={() => setShowMpesa((v) => !v)}

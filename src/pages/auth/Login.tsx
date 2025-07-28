@@ -34,7 +34,10 @@ export default function Login() {
     try {
       const result = await dispatch(loginUser(data)).unwrap()
       toast.success('Login successful!')
-      
+      // Store token in localStorage
+      if (result.token) {
+        localStorage.setItem('token', result.token)
+      }
       // Redirect based on user role
       const { user } = result
       switch (user.role) {

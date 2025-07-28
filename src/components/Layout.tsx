@@ -31,45 +31,41 @@ export default function Layout() {
   }
 
   const getNavigationItems = () => {
-    const baseItems = [
-      { name: 'Dashboard', href: '/dashboard', icon: Home },
-      { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
-      { name: 'Prescriptions', href: '/dashboard/prescriptions', icon: FileText },
-      { name: 'Medical History', href: '/dashboard/medical-history', icon: FileText },
-      { name: 'Support', href: '/dashboard/support', icon: MessageSquare },
-    ]
-
     if (user?.role === 'user') {
       return [
-        ...baseItems,
-        { name: 'Find Doctors', href: '/dashboard/find-doctors', icon: Users },
-        { name: 'Payments', href: '/dashboard/payments', icon: CreditCard },
-      ]
-    }
-
-    if (user?.role === 'doctor') {
-      return [
-        { name: 'Dashboard', href: '/dashboard/doctor', icon: Home },
+        { name: 'Dashboard', href: '/dashboard', icon: Home },
         { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
         { name: 'Prescriptions', href: '/dashboard/prescriptions', icon: FileText },
         { name: 'Medical History', href: '/dashboard/medical-history', icon: FileText },
         { name: 'Support', href: '/dashboard/support', icon: MessageSquare },
-      ]
+        { name: 'Find Doctors', href: '/dashboard/find-doctors', icon: Users },
+        { name: 'Payments', href: '/dashboard/payments', icon: CreditCard },
+      ];
     }
-
+    if (user?.role === 'doctor') {
+      return [
+        { name: 'Dashboard', href: '/dashboard/doctor', icon: Home },
+        { name: 'Appointments', href: '/dashboard/doctor/appointments', icon: Calendar },
+        { name: 'Prescriptions', href: '/dashboard/doctor/prescriptions', icon: FileText },
+        { name: 'Medical History', href: '/dashboard/doctor/medical-history', icon: FileText },
+        { name: 'Support', href: '/dashboard/doctor/support', icon: MessageSquare },
+      ];
+    }
     if (user?.role === 'admin') {
       return [
         { name: 'Dashboard', href: '/dashboard/admin', icon: Home },
         { name: 'User Management', href: '/dashboard/admin/users', icon: Users },
         { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
         { name: 'Reports', href: '/dashboard/admin/reports', icon: FileText },
-        { name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
-        { name: 'Support', href: '/dashboard/support', icon: MessageSquare },
-      ]
+        { name: 'Appointments', href: '/dashboard/admin/appointments', icon: Calendar },
+        { name: 'Support', href: '/dashboard/admin/support', icon: MessageSquare },
+      ];
     }
-
-    return baseItems
-  }
+    // fallback
+    return [
+      { name: 'Dashboard', href: '/dashboard', icon: Home },
+    ];
+  };
 
   const navigationItems = getNavigationItems()
 

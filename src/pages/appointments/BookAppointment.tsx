@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useSelector } from 'react-redux'
+import { ArrowLeft, User, FileText, Calendar, Clock, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { Calendar, Clock, User, FileText, ArrowLeft, CreditCard } from 'lucide-react'
+import appointmentAPI from '../../utils/api/appointmentAPI'
 import PaymentButton from '../../components/PaymentButton'
-import appointmentAPI from '../../utils/api/appointmentAPI';
+import type { RootState } from '../../store'
+import { fetchAppointments } from '../../store/slices/appointmentSlice';
+import { useDispatch } from 'react-redux';
 
 const appointmentSchema = z.object({
   doctor_id: z.string().min(1, 'Please select a doctor'),
+  appointment_type: z.string().min(1, 'Please select appointment type'),
   appointment_date: z.string().min(1, 'Please select a date'),
   appointment_time: z.string().min(1, 'Please select a time'),
-  appointment_type: z.string().min(1, 'Please select appointment type'),
   reason: z.string().min(10, 'Please provide a reason (at least 10 characters)'),
 })
 
@@ -21,9 +25,10 @@ type AppointmentFormData = z.infer<typeof appointmentSchema>
 export default function BookAppointment() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useSelector((state: RootState) => state.auth)
   const [isLoading, setIsLoading] = useState(false)
   const [bookedAppointment, setBookedAppointment] = useState<{
-    id: string
+    id: number
     doctor: string
     date: string
     time: string
@@ -33,6 +38,7 @@ export default function BookAppointment() {
   const [doctors, setDoctors] = useState<any[]>([])
   const [doctorLoading, setDoctorLoading] = useState(true)
   const [doctorError, setDoctorError] = useState('')
+  const dispatch = useDispatch();
 
   // Parse doctor_id from query param
   const params = new URLSearchParams(location.search)
@@ -104,9 +110,14 @@ export default function BookAppointment() {
   const onSubmit = async (data: AppointmentFormData) => {
     setIsLoading(true)
     try {
-      // Simulate API call to book appointment
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      // Check if user is authenticated
+      if (!user) {
+        toast.error('Please log in to book an appointment')
+        return
+      }
+
+      console.log('Current user:', user) // Debug log
+
       // Get selected doctor info
       const selectedDoctor = doctors.find(d => d.doctor_id === data.doctor_id)
       
@@ -122,8 +133,23 @@ export default function BookAppointment() {
       
       const cost = appointmentCosts[data.appointment_type as keyof typeof appointmentCosts] || 150
       
-      // Simulate successful booking with generated ID
-      const appointmentId = `APT-${Date.now()}`
+      // Create appointment in database
+      const appointmentData = {
+        user_id: user.user_id,
+        doctor_id: parseInt(data.doctor_id),
+        appointment_date: data.appointment_date,
+        time_slot: data.appointment_time,
+        total_amount: cost,
+        appointment_status: 'Pending',
+        notes: data.reason
+      }
+      
+      console.log('Sending appointment data:', appointmentData) // Debug log
+      
+      const response = await appointmentAPI.addAppointment(appointmentData)
+      console.log('Appointment response:', response) // Debug log
+      
+      const appointmentId = response.appointment_id
       
       setBookedAppointment({
         id: appointmentId,
@@ -133,10 +159,16 @@ export default function BookAppointment() {
         type: data.appointment_type,
         amount: cost
       })
-      
+      // Dynamically update appointments list
+      if (dispatch) {
+        // @ts-ignore
+        dispatch(fetchAppointments());
+      }
       toast.success('Appointment booked successfully! Please proceed with payment.')
-    } catch {
-      toast.error('Failed to book appointment. Please try again.')
+    } catch (error: any) {
+      console.error('Appointment booking error:', error)
+      console.error('Error response:', error.response?.data) // Debug log
+      toast.error(error.response?.data?.message || 'Failed to book appointment. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -355,7 +387,7 @@ export default function BookAppointment() {
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-medium">Amount:</span>
-                    <span className="font-bold text-lg">${bookedAppointment.amount}</span>
+                    <span className="font-bold text-lg">Ksh {Number(bookedAppointment.amount).toLocaleString()}</span>
                   </div>
                 </div>
               </div>

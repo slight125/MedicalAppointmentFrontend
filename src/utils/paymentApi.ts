@@ -1,7 +1,7 @@
-import api from './api'
+import { api } from "./api";
 
 export interface PaymentSessionRequest {
-  appointment_id: string
+  appointment_id: number
   amount: number
 }
 
@@ -10,20 +10,60 @@ export interface PaymentSessionResponse {
 }
 
 export interface PaymentConfirmRequest {
-  appointment_id: string
+  appointment_id: number
   amount: number
   transaction_id: string
   payment_status: 'completed' | 'failed'
 }
 
 export interface Payment {
-  id: string
-  appointment_id: string
-  amount: number
-  transaction_id: string
+  payment_id: number
+  appointment_id: number
+  amount: string
   payment_status: 'completed' | 'pending' | 'failed' | 'refunded'
+  transaction_id: string
+  payment_date: string | null
   created_at: string
-  phone_number?: string
+  updated_at: string
+  appointment?: {
+    appointment_id: number
+    user_id: number
+    doctor_id: number
+    appointment_date: string
+    time_slot: string
+    total_amount: string
+    appointment_status: string
+    paid: boolean
+    diagnosis: string | null
+    treatment: string | null
+    medications: string | null
+    notes: string | null
+    created_at: string
+    updated_at: string
+    user?: {
+      user_id: number
+      firstname: string
+      lastname: string
+      email: string
+      contact_phone: string
+      address: string
+      role: string
+      created_at: string
+      updated_at: string
+    }
+    doctor?: {
+      doctor_id: number
+      user_id: number
+      first_name: string
+      last_name: string
+      specialization: string
+      license_number: string
+      experience_years: number
+      consultation_fee: string
+      created_at: string
+      updated_at: string
+    }
+  }
 }
 
 // Create Stripe payment session
@@ -59,7 +99,7 @@ export const getPaymentHistory = async (): Promise<Payment[]> => {
 }
 
 // Get payment details by appointment ID
-export const getPaymentByAppointment = async (appointmentId: string): Promise<Payment | null> => {
+export const getPaymentByAppointment = async (appointmentId: number): Promise<Payment | null> => {
   try {
     const response = await api.get(`/payments/appointment/${appointmentId}`)
     return response.data

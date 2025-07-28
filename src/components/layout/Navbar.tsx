@@ -5,15 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
 import { logout } from '../../store/slices/authSlice';
 import { toggleDarkMode } from '../../store/slices/themeSlice';
-import { FiMenu, FiMoon, FiSun, FiUser, FiLogOut } from 'react-icons/fi';
-import { useResponsive } from '../../hooks/useResponsive';
+import { FiMoon, FiSun, FiUser, FiLogOut } from 'react-icons/fi';
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { darkMode } = useSelector((state: RootState) => state.theme);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { isMobile } = useResponsive();
 
   const handleLogout = () => {
     dispatch(logout());

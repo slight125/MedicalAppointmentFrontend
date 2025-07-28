@@ -17,3 +17,19 @@ export const fetchAllAppointmentsAdmin = async () => {
   });
   return response.data;
 };
+
+export const adminDeleteAppointment = async (appointmentId: string) => {
+  const token = localStorage.getItem('token');
+  const response = await api.delete(`/appointments/${appointmentId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+export const adminUpdateAppointmentStatus = async (appointmentId: string, status: string) => {
+  const token = localStorage.getItem('token');
+  const response = await api.patch(`/appointments/${appointmentId}/override`, { status }, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};

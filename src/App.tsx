@@ -35,6 +35,8 @@ import PaymentCancel from './pages/payments/PaymentCancel'
 import MedicalHistory from './pages/medical-history/MedicalHistory'
 import SupportTickets from './pages/support/SupportTickets'
 import FindDoctors from './pages/dashboard/FindDoctors';
+import WritePrescription from './pages/doctor/WritePrescription';
+import DoctorPrescriptions from './pages/doctor/Prescriptions';
 
 // Admin Pages
 import AdminAnalytics from './pages/admin/Analytics'
@@ -108,16 +110,23 @@ function App() {
               <UserDashboard />
             </ProtectedRoute>
           } />
-          <Route path="doctor" element={
+          <Route path="doctor" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
+          <Route path="doctor/appointments" element={<ProtectedRoute allowedRoles={['doctor']}><AppointmentList /></ProtectedRoute>} />
+          <Route path="doctor/write-prescription" element={
             <ProtectedRoute allowedRoles={['doctor']}>
-              <DoctorDashboard />
+              <WritePrescription />
             </ProtectedRoute>
           } />
-          <Route path="admin" element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
+          <Route path="doctor/prescriptions" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorPrescriptions /></ProtectedRoute>} />
+          <Route path="doctor/medical-history" element={<ProtectedRoute allowedRoles={['doctor']}><MedicalHistory /></ProtectedRoute>} />
+          <Route path="doctor/support" element={<ProtectedRoute allowedRoles={['doctor']}><SupportTickets /></ProtectedRoute>} />
+
+          <Route path="admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+          <Route path="admin/users" element={<ProtectedRoute allowedRoles={['admin']}><AdminUserManagement /></ProtectedRoute>} />
+          <Route path="admin/analytics" element={<ProtectedRoute allowedRoles={['admin']}><AdminAnalytics /></ProtectedRoute>} />
+          <Route path="admin/reports" element={<ProtectedRoute allowedRoles={['admin']}><AdminReports /></ProtectedRoute>} />
+          <Route path="admin/appointments" element={<ProtectedRoute allowedRoles={['admin']}><AppointmentList /></ProtectedRoute>} />
+          <Route path="admin/support" element={<ProtectedRoute allowedRoles={['admin']}><AdminSupport /></ProtectedRoute>} />
 
           {/* Appointment Routes */}
           <Route path="appointments" element={
@@ -142,7 +151,7 @@ function App() {
               <PrescriptionList />
             </ProtectedRoute>
           } />
-          <Route path="prescriptions/:appointmentId" element={
+          <Route path="prescriptions/:prescriptionId" element={
             <ProtectedRoute allowedRoles={['user', 'doctor', 'admin']}>
               <PrescriptionDetail />
             </ProtectedRoute>
@@ -164,7 +173,8 @@ function App() {
           } />
 
           {/* Admin Routes */}
-          <Route path="admin/users" element={
+          {/* These routes are now handled by the /dashboard/admin route */}
+          {/* <Route path="admin/users" element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminUserManagement />
             </ProtectedRoute>
@@ -183,7 +193,7 @@ function App() {
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminSupport />
             </ProtectedRoute>
-          } />
+          } /> */}
         </Route>
 
         {/* 404 Route */}

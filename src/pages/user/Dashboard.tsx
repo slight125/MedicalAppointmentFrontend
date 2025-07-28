@@ -1,100 +1,177 @@
-import { useSelector } from 'react-redux';
-import { Calendar, FileText, CreditCard, Heart } from 'lucide-react';
-import type { RootState } from '../../store';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { Calendar, FileText, Heart } from 'lucide-react';
+import type { RootState, AppDispatch } from '../../store';
+import { fetchAppointments } from '../../store/slices/appointmentSlice';
+import { fetchUserPrescriptions } from '../../store/slices/prescriptionSlice';
 
 export default function UserDashboard() {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { appointments, isLoading: apptLoading } = useSelector((state: RootState) => state.appointments);
+  const { prescriptions, isLoading: prescLoading } = useSelector((state: RootState) => state.prescriptions);
+
+  useEffect(() => {
+    dispatch(fetchAppointments());
+    dispatch(fetchUserPrescriptions());
+  }, [dispatch]);
+
+  // Debug logging
+  console.log('🔍 Frontend Debug:');
+  console.log('🔍 appointments from Redux:', appointments);
+  console.log('🔍 apptLoading:', apptLoading);
+
+  // Today's Appointments
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todaysAppointments = appointments.filter(a => a.appointment_date?.slice(0, 10) === todayStr);
+
+  // Upcoming Appointments (next 2) - show future appointments or recent ones as fallback
+  const futureAppointments = appointments.filter(a => new Date(a.appointment_date) > new Date());
+  const upcomingAppointments = futureAppointments.length > 0 
+    ? [...futureAppointments]
+        .sort((a, b) => new Date(a.appointment_date).getTime() - new Date(b.appointment_date).getTime())
+        .slice(0, 2)
+    : [...appointments]
+        .sort((a, b) => new Date(b.appointment_date).getTime() - new Date(a.appointment_date).getTime())
+        .slice(0, 2);
+
+  console.log('🔍 todayStr:', todayStr);
+  console.log('🔍 todaysAppointments:', todaysAppointments);
+  console.log('🔍 upcomingAppointments:', upcomingAppointments);
+  console.log('🔍 futureAppointments:', futureAppointments);
+  console.log('🔍 futureAppointments.length:', futureAppointments.length);
+  
+  // Debug individual appointments
+  appointments.forEach((appt, index) => {
+    console.log(`🔍 Appointment ${index}:`, {
+      id: appt.appointment_id,
+      date: appt.appointment_date,
+      dateType: typeof appt.appointment_date,
+      isToday: appt.appointment_date?.slice(0, 10) === todayStr,
+      isFuture: new Date(appt.appointment_date) > new Date(),
+      currentDate: new Date(),
+      appointmentDate: new Date(appt.appointment_date)
+    });
+  });
+
+  // Recent Prescriptions (latest 2)
+  const recentPrescriptions = [...prescriptions]
+    .sort((a, b) => new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime())
+    .slice(0, 2);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl p-8 shadow text-white">
+      <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-8 shadow text-white mb-8 border border-blue-700">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-semibold mb-2">
               Welcome back, {user?.firstname}!
             </h1>
-            <p className="text-white/90 text-lg">
+            <p className="text-blue-100 text-lg">
               Manage your health appointments and medical records
             </p>
           </div>
-          <Heart className="w-12 h-12 opacity-40" />
+          <Heart className="w-12 h-12 opacity-40 text-blue-300" />
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="flex justify-center flex-wrap gap-4 mb-8">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow"
+          onClick={() => window.location.href = '/dashboard/appointments/book'}
+        >
+          Book Appointment
+        </button>
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow"
+          onClick={() => window.location.href = '/dashboard/medical-history'}
+        >
+          View Medical History
+        </button>
+        <button
+          className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg shadow"
+          onClick={() => window.location.href = '/dashboard/support'}
+        >
+          Contact Support
+        </button>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { label: 'Upcoming', value: '3', sub: 'Appointments', icon: <Calendar className="text-blue-600" />, bg: 'bg-blue-100' },
-          { label: 'Active', value: '5', sub: 'Prescriptions', icon: <FileText className="text-green-600" />, bg: 'bg-green-100' },
-          { label: 'Last Payment', value: '$150', sub: 'Dec 10, 2024', icon: <CreditCard className="text-purple-600" />, bg: 'bg-purple-100' },
-          { label: 'Health Score', value: '92%', sub: 'Excellent', icon: <Heart className="text-orange-600" />, bg: 'bg-orange-100' }
-        ].map((stat, idx) => (
-          <div key={idx} className="bg-white rounded-xl shadow p-6 flex justify-between items-center">
-            <div>
-              <p className="text-gray-500 text-sm">{stat.label}</p>
-              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-gray-500 text-sm">{stat.sub}</p>
-            </div>
-            <div className={`${stat.bg} p-3 rounded-full`}>
-              {stat.icon}
-            </div>
-          </div>
-        ))}
+      <div className="flex justify-center mb-8">
+        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700 w-64">
+          <div className="text-2xl font-bold text-blue-400">{apptLoading ? '...' : todaysAppointments.length}</div>
+          <div className="text-gray-300">Today's Appointments</div>
+        </div>
       </div>
 
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
+      {/* Recent/Upcoming Appointments */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
+          {futureAppointments.length > 0 ? 'Upcoming Appointments' : 'Recent Appointments'}
+        </h2>
         <div className="space-y-4">
-          <div className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              <Calendar className="text-green-500 w-6 h-6" />
-              <div>
-                <p className="font-medium text-gray-900">Appointment scheduled</p>
-                <p className="text-sm text-gray-500">Checkup with Dr. Sarah Johnson</p>
+          {apptLoading ? (
+            <div className="text-gray-400">Loading...</div>
+          ) : upcomingAppointments.length === 0 ? (
+            <div className="text-gray-400">No upcoming appointments.</div>
+          ) : upcomingAppointments.map((appt) => (
+            <div key={appt.appointment_id} className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <Calendar className="text-green-500 w-6 h-6" />
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {appt.doctor ? `Checkup with Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}` : 'Appointment'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(appt.appointment_date).toLocaleString()} at {appt.time_slot}
+                  </p>
+                </div>
               </div>
+              <span className="text-sm text-gray-400">
+                {Math.ceil((new Date(appt.appointment_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
+              </span>
             </div>
-            <span className="text-sm text-gray-400">2 hours ago</span>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              <FileText className="text-blue-500 w-6 h-6" />
-              <div>
-                <p className="font-medium text-gray-900">Prescription updated</p>
-                <p className="text-sm text-gray-500">New medication added</p>
-              </div>
-            </div>
-            <span className="text-sm text-gray-400">1 day ago</span>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
-            <div className="flex items-center gap-4">
-              <CreditCard className="text-purple-500 w-6 h-6" />
-              <div>
-                <p className="font-medium text-gray-900">Payment processed</p>
-                <p className="text-sm text-gray-500">$150 paid for consultation</p>
-              </div>
-            </div>
-            <span className="text-sm text-gray-400">3 days ago</span>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Health Tip */}
-      <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-xl shadow p-8">
-        <div className="flex items-start gap-6">
-          <div className="bg-white/20 p-4 rounded-full">
-            <Heart className="w-8 h-8" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-semibold mb-2">Stay Hydrated</h3>
-            <p className="text-white/90 text-lg">
-              Drink at least 8 glasses of water daily to maintain optimal health.
-              Proper hydration supports your immune system and keeps your body functioning well.
-            </p>
-          </div>
+      {/* Recent Prescriptions */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Recent Prescriptions</h2>
+        <div className="space-y-4">
+          {prescLoading ? (
+            <div className="text-gray-400">Loading...</div>
+          ) : recentPrescriptions.length === 0 ? (
+            <div className="text-gray-400">No recent prescriptions.</div>
+          ) : recentPrescriptions.map((presc) => (
+            <div key={presc.prescription_id} className="bg-white p-4 rounded-xl shadow flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <FileText className="text-blue-500 w-6 h-6" />
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {Array.isArray(presc.medicines) && presc.medicines.length > 0
+                      ? presc.medicines[0].name
+                      : typeof presc.medicines === 'string'
+                        ? presc.medicines
+                        : 'Prescription'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Issued by Dr. {presc.doctor_name || presc.doctor_id} on {new Date(presc.issued_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <span className="text-sm text-gray-400">
+                {Math.ceil((Date.now() - new Date(presc.issued_at).getTime()) / (1000 * 60 * 60 * 24))} days ago
+              </span>
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* Appointments Table (optional, can be removed if not needed) */}
+      {/* ... */}
     </div>
   );
 }

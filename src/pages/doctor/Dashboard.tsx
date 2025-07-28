@@ -1,113 +1,76 @@
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { 
-  Calendar, 
-  Users, 
-  FileText, 
-  Clock, 
   TrendingUp,
   AlertCircle,
-  CheckCircle,
-  XCircle
+  CheckCircle
 } from 'lucide-react'
 import type { RootState } from '../../store'
+import appointmentAPI from '../../utils/api/appointmentAPI'
+import prescriptionAPI from '../../utils/api/prescriptionAPI'
+import { doctorAPI } from '../../utils/api/doctorAPI'
+import { toast } from 'react-hot-toast';
 
 export default function DoctorDashboard() {
   const { user } = useSelector((state: RootState) => state.auth)
-  const navigate = useNavigate()
 
-  const todayStats = [
-    {
-      title: 'Today\'s Appointments',
-      value: '8',
-      change: '+2 from yesterday',
-      icon: Calendar,
-      color: 'text-blue-600',
-      bg: 'bg-blue-100'
-    },
-    {
-      title: 'Total Patients',
-      value: '156',
-      change: '+12 this month',
-      icon: Users,
-      color: 'text-green-600',
-      bg: 'bg-green-100'
-    },
-    {
-      title: 'Prescriptions Issued',
-      value: '23',
-      change: '+5 today',
-      icon: FileText,
-      color: 'text-purple-600',
-      bg: 'bg-purple-100'
-    },
-    {
-      title: 'Avg. Consultation',
-      value: '25 min',
-      change: 'Normal range',
-      icon: Clock,
-      color: 'text-orange-600',
-      bg: 'bg-orange-100'
-    }
-  ]
+  const [appointments, setAppointments] = useState<any[]>([])
+  const [prescriptions, setPrescriptions] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<any>({ emergencies: [], labResults: [] })
+  const [performance, setPerformance] = useState<any>({ patientsSeen: 0, avgRating: 0, onTimeRate: 0 })
+  const [loading, setLoading] = useState(true)
+  const [fee, setFee] = useState<number | null>(null);
+  const [feeEdit, setFeeEdit] = useState(false);
+  const [feeInput, setFeeInput] = useState('');
+  const [feeLoading, setFeeLoading] = useState(false);
+  const [doctorId, setDoctorId] = useState<number | null>(null);
 
-  const todayAppointments = [
-    {
-      id: 1,
-      patient: 'John Smith',
-      time: '09:00 AM',
-      type: 'Regular Checkup',
-      status: 'completed',
-      duration: '30 min'
-    },
-    {
-      id: 2,
-      patient: 'Sarah Johnson',
-      time: '10:30 AM',
-      type: 'Follow-up',
-      status: 'completed',
-      duration: '20 min'
-    },
-    {
-      id: 3,
-      patient: 'Michael Brown',
-      time: '11:00 AM',
-      type: 'Consultation',
-      status: 'in-progress',
-      duration: '25 min'
-    },
-    {
-      id: 4,
-      patient: 'Emily Davis',
-      time: '02:00 PM',
-      type: 'Emergency',
-      status: 'scheduled',
-      duration: '45 min'
-    },
-    {
-      id: 5,
-      patient: 'Robert Wilson',
-      time: '03:30 PM',
-      type: 'Regular Checkup',
-      status: 'scheduled',
-      duration: '30 min'
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      try {
+        // Fetch all appointments for this doctor
+        const apptRes = await appointmentAPI.getDoctorAppointments?.() || await appointmentAPI.getAppointmentsStats();
+        setAppointments(apptRes.data || [])
+        // Fetch all prescriptions for this doctor
+        if (prescriptionAPI.getDoctorPrescriptions) {
+          const presRes = await prescriptionAPI.getDoctorPrescriptions()
+          setPrescriptions(presRes.data || [])
+        }
+        // Fetch notifications
+        const notifRes = await doctorAPI.getNotifications()
+        setNotifications(notifRes.data || { emergencies: [], labResults: [] })
+        // Fetch performance metrics
+        const perfRes = await doctorAPI.getPerformance()
+        setPerformance(perfRes.data || { patientsSeen: 0, avgRating: 0, onTimeRate: 0 })
+      } catch (err) {
+        // handle error
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    fetchData()
+  }, [])
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-4 h-4 text-green-500" />
-      case 'in-progress':
-        return <AlertCircle className="w-4 h-4 text-yellow-500" />
-      case 'scheduled':
-        return <Clock className="w-4 h-4 text-blue-500" />
-      case 'cancelled':
-        return <XCircle className="w-4 h-4 text-red-500" />
-      default:
-        return <Clock className="w-4 h-4 text-gray-500" />
+  useEffect(() => {
+    async function fetchFee() {
+      if (user?.role === 'doctor' && user.user_id) {
+        try {
+          const profile = await doctorAPI.getDoctorProfileByUserId(user.user_id);
+          setDoctorId(profile.doctor_id);
+          setFee(Number(profile.fee));
+        } catch (err) {
+          console.error('Failed to fetch doctor profile:', err);
+          toast.error('Failed to load doctor profile.');
+        }
+      }
     }
-  }
+    fetchFee();
+  }, [user]);
+
+  // Calculate stats dynamically
+  const today = new Date().toISOString().slice(0, 10)
+  const todaysAppointments = appointments.filter(a => a.appointment_date?.slice(0, 10) === today)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -124,159 +87,162 @@ export default function DoctorDashboard() {
     }
   }
 
+  if (loading) {
+    return <div className="p-6">Loading...</div>
+  }
+
   return (
-    <div className="p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, Dr. {user?.lastname}!
-        </h1>
-        <p className="text-gray-600">
-          Here's your schedule and patient overview for today.
-        </p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {todayStats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
-              </div>
-              <div className={`p-3 rounded-lg ${stat.bg}`}>
-                <stat.icon className={`w-6 h-6 ${stat.color}`} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Today's Schedule */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-md">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Today's Schedule</h2>
-                <button 
-                  onClick={() => navigate('/dashboard/appointments')}
-                  className="btn btn-primary btn-sm"
-                >
-                  View All
-                </button>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {todayAppointments.map((appointment) => (
-                  <div 
-                    key={appointment.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      {getStatusIcon(appointment.status)}
-                      <div>
-                        <h3 className="font-medium text-gray-900">{appointment.patient}</h3>
-                        <p className="text-sm text-gray-600">{appointment.type}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{appointment.time}</p>
-                      <p className="text-xs text-gray-500">{appointment.duration}</p>
-                      <span className={`badge badge-sm ${getStatusBadge(appointment.status)} mt-1`}>
-                        {appointment.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+    <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-xl p-8 shadow text-white mb-8 border border-blue-700 dark:border-blue-900">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-semibold mb-2">
+              Welcome back, Dr. {user?.lastname}!
+            </h1>
+            <p className="text-blue-100 text-lg">
+              Here's your schedule and patient overview for today.
+            </p>
           </div>
         </div>
-
-        {/* Quick Actions & Recent Activity */}
-        <div className="space-y-6">
-          {/* Quick Actions */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <button 
-                onClick={() => navigate('/dashboard/prescriptions')}
-                className="w-full btn btn-outline btn-primary justify-start gap-3"
-              >
-                <FileText className="w-4 h-4" />
-                Write Prescription
-              </button>
-              <button 
-                onClick={() => navigate('/dashboard/medical-history')}
-                className="w-full btn btn-outline btn-secondary justify-start gap-3"
-              >
-                <Users className="w-4 h-4" />
-                View Patient History
-              </button>
-              <button 
-                onClick={() => navigate('/dashboard/appointments')}
-                className="w-full btn btn-outline btn-accent justify-start gap-3"
-              >
-                <Calendar className="w-4 h-4" />
-                Manage Schedule
-              </button>
-            </div>
+      </div>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700">
+          <div className="text-2xl font-bold text-blue-400">{appointments.length}</div>
+          <div className="text-gray-300">Today's Appointments</div>
+        </div>
+        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700">
+          <div className="text-2xl font-bold text-green-400">{performance.patientsSeen}</div>
+          <div className="text-gray-300">Total Patients</div>
+        </div>
+        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700">
+          <div className="text-2xl font-bold text-purple-400">{prescriptions.length}</div>
+          <div className="text-gray-300">Prescriptions Issued</div>
+        </div>
+        <div className="bg-gray-900 rounded-xl p-6 shadow text-center border border-gray-700">
+          <div className="text-2xl font-bold text-yellow-400">{performance.avgConsultation} min</div>
+          <div className="text-gray-300">Avg. Consultation</div>
+        </div>
+      </div>
+      {/* Appointments Table */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Today's Appointments</h2>
+        <div className="overflow-x-auto">
+          <table className="table w-full">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              {todaysAppointments.map((appt, idx) => (
+                <tr key={appt.appointment_id || idx}>
+                  <td>{appt.user?.firstname} {appt.user?.lastname}</td>
+                  <td>{appt.time_slot}</td>
+                  <td>{appt.type || appt.appointment_status}</td>
+                  <td><span className={`badge ${getStatusBadge(appt.appointment_status)}`}>{appt.appointment_status}</span></td>
+                  <td>{appt.duration || '25 min'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Performance */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">This Week</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="text-center">
+            <span className="text-sm text-gray-400">Patients Seen</span>
+            <div className="font-medium text-blue-400 text-2xl">{performance.patientsSeen}</div>
           </div>
-
-          {/* Performance Metrics */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Patients Seen</span>
-                <span className="font-medium">42</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Avg. Rating</span>
-                <div className="flex items-center gap-1">
-                  <span className="font-medium">4.8</span>
-                  <div className="flex text-yellow-400">
-                    {'★'.repeat(5)}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">On-time Rate</span>
-                <span className="font-medium text-green-600">96%</span>
-              </div>
-              <div className="pt-2">
-                <div className="flex items-center gap-2 text-sm text-green-600">
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Great performance this week!</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Urgent Notifications */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg">
-                <AlertCircle className="w-4 h-4 text-red-500 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-red-800">Emergency Appointment</p>
-                  <p className="text-xs text-red-600">Emily Davis - 2:00 PM</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
-                <AlertCircle className="w-4 h-4 text-blue-500 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-blue-800">Lab Results Ready</p>
-                  <p className="text-xs text-blue-600">3 patients have new results</p>
-                </div>
+          <div className="text-center">
+            <span className="text-sm text-gray-400">Avg. Rating</span>
+            <div className="flex items-center gap-1 justify-center">
+              <span className="font-medium text-yellow-400 text-2xl">{performance.avgRating}</span>
+              <div className="flex text-yellow-400">
+                {'★'.repeat(Math.round(performance.avgRating))}
               </div>
             </div>
           </div>
+          <div className="text-center">
+            <span className="text-sm text-gray-400">On-time Rate</span>
+            <span className="font-medium text-green-400 text-2xl">{performance.onTimeRate}%</span>
+          </div>
+        </div>
+        <div className="pt-2 flex items-center justify-center gap-2 text-sm text-green-400">
+          <TrendingUp className="w-4 h-4" />
+          <span>Great performance this week!</span>
+        </div>
+      </div>
+      {/* Notifications */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow border border-gray-700">
+        <h3 className="text-lg font-semibold mb-4 text-white border-b border-gray-700 pb-2">Notifications</h3>
+        <div className="space-y-3">
+          {notifications.labResults && notifications.labResults.map((lab: any, idx: number) => (
+            <div key={idx} className="flex items-center gap-3 p-3 bg-blue-800/40 rounded-lg border border-blue-900">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <span className="text-sm font-medium text-green-200">{lab.message}</span>
+            </div>
+          ))}
+          {notifications.emergencies.map((appt: any, idx: number) => (
+            <div key={idx} className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-700">
+              <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-800 dark:text-red-300">Emergency Appointment</p>
+                <p className="text-xs text-red-600 dark:text-red-400">{appt.user?.firstname} {appt.user?.lastname} - {appt.time_slot}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Doctor Fee Section */}
+      <div className="bg-gray-900 rounded-xl p-6 shadow mb-8 border border-gray-700">
+        <h2 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">Consultation Fee</h2>
+        <div className="flex items-center gap-4">
+          {feeEdit ? (
+            <>
+              <input
+                type="number"
+                className="input input-bordered w-32 mr-2"
+                value={feeInput}
+                onChange={e => setFeeInput(e.target.value)}
+                min={0}
+                disabled={feeLoading}
+              />
+              <button
+                className="btn btn-success btn-sm mr-2"
+                disabled={feeLoading}
+                onClick={async () => {
+                  setFeeLoading(true);
+                  try {
+                    if (!doctorId) throw new Error('Doctor ID missing');
+                    await doctorAPI.updateFee(doctorId, Number(feeInput));
+                    setFee(Number(feeInput));
+                    setFeeEdit(false);
+                    toast.success('Fee updated!');
+                  } catch (err) {
+                    toast.error('Failed to update fee');
+                  } finally {
+                    setFeeLoading(false);
+                  }
+                }}
+              >
+                Save
+              </button>
+              <button className="btn btn-ghost btn-sm" onClick={() => setFeeEdit(false)} disabled={feeLoading}>Cancel</button>
+            </>
+          ) : (
+            <>
+              <span className="text-2xl font-bold text-green-400">{fee !== null ? `Ksh ${fee.toLocaleString()}` : 'Not set'}</span>
+              <button className="btn btn-outline btn-sm ml-2" onClick={() => { setFeeEdit(true); setFeeInput(fee?.toString() || ''); }}>Edit</button>
+            </>
+          )}
         </div>
       </div>
     </div>

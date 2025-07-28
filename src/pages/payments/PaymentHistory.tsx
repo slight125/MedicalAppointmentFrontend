@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Calendar, CreditCard, Search, Filter, Clock } from 'lucide-react'
 import { getPaymentHistory, type Payment } from '../../utils/paymentApi'
 import toast from 'react-hot-toast'
+import { api } from '../../utils/api';
 
 export default function PaymentHistory() {
   const [payments, setPayments] = useState<Payment[]>([])
@@ -38,11 +39,7 @@ export default function PaymentHistory() {
 
   // Format currency display
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(amount)
+    return `Ksh ${Number(amount).toLocaleString()}`;
   }
 
   // Get status badge class
@@ -67,7 +64,6 @@ export default function PaymentHistory() {
     
     const matchesSearch = searchTerm === '' ||
       doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      payment.id.toString().includes(searchTerm.toLowerCase()) ||
       payment.transaction_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment.payment_status.toLowerCase().includes(searchTerm.toLowerCase())
     
@@ -97,19 +93,21 @@ export default function PaymentHistory() {
 
   const handleViewReceipt = async (paymentId: string) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/payments/${paymentId}/receipt`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      console.log('Fetching receipt for payment ID:', paymentId);
+      
+      const response = await api.get(`/payments/${paymentId}/receipt`, {
+        responseType: 'blob',
       });
-      if (!response.ok) {
+      
+      if (!response.data) {
         throw new Error('Failed to fetch receipt');
       }
-      const blob = await response.blob();
+      
+      const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       window.open(url, '_blank');
     } catch (err) {
+      console.error('Receipt fetch error:', err);
       toast.error('Failed to fetch receipt');
     }
   };
@@ -227,11 +225,11 @@ export default function PaymentHistory() {
           </div>
         ) : (
           filteredPayments.map((payment) => (
-            <div key={payment.transaction_id || payment.id} className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+            <div key={payment.transaction_id || payment.payment_id} className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Payment #{payment.id}
+                    Payment #{payment.payment_id}
                   </h3>
                   <div className="flex items-center gap-2">
                     <span className={`badge ${getStatusBadge(payment.payment_status)}`}>{payment.payment_status}</span>
@@ -239,7 +237,7 @@ export default function PaymentHistory() {
                 </div>
                 <div className="text-right mt-4 md:mt-0">
                   <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrency(payment.amount)}
+                    {formatCurrency(parseFloat(payment.amount))}
                   </p>
                   <p className="text-sm text-gray-500">
                     {formatDate(payment.created_at)}
@@ -247,7 +245,7 @@ export default function PaymentHistory() {
                 </div>
               </div>
 
-              {/* Appointment details not available in current Payment type */}
+              {/* Payment Details */}
               <div className="bg-gray-50 rounded-lg p-4">
                 <h4 className="font-medium text-gray-800 mb-3">Payment Details</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -265,12 +263,12 @@ export default function PaymentHistory() {
                       <p className="font-medium">{payment.transaction_id}</p>
                     </div>
                   </div>
-                  {payment.phone_number && (
+                  {payment.appointment?.doctor && (
                     <div className="flex items-center text-gray-600">
                       <CreditCard className="w-5 h-5 mr-3" />
                       <div>
-                        <p className="text-xs text-gray-500">Phone Number</p>
-                        <p className="font-medium">{payment.phone_number}</p>
+                        <p className="text-xs text-gray-500">Doctor</p>
+                        <p className="font-medium">Dr. {payment.appointment.doctor.first_name} {payment.appointment.doctor.last_name}</p>
                       </div>
                     </div>
                   )}
@@ -279,7 +277,7 @@ export default function PaymentHistory() {
 
               <div className="flex justify-end mt-6">
                 {payment.payment_status === 'completed' && (
-                  <button className="btn btn-outline btn-sm" onClick={() => handleViewReceipt(payment.payment_id)}>
+                  <button className="btn btn-outline btn-sm" onClick={() => handleViewReceipt(payment.payment_id.toString())}>
                     View Receipt
                   </button>
                 )}
