@@ -71,16 +71,32 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header row: Hamburger + Logo */}
+      <div className="flex items-center px-2 py-2 bg-white dark:bg-gray-900">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="mr-2 z-[130] p-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
+          title="Open sidebar"
+          aria-label="Open navigation menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+        <span className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+          <Heart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          MediCare
+        </span>
+      </div>
+
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden" // z-50 to ensure overlay is above all
+          className="fixed inset-0 z-[110] bg-black bg-opacity-50 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar - Always visible on desktop, collapsible on mobile */}
-      <div className={`fixed inset-y-0 left-0 z-60 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+      <div className={`fixed inset-y-0 left-0 z-[120] w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
@@ -151,19 +167,8 @@ export default function Layout() {
 
       {/* Main content - Account for sidebar on desktop */}
       <div className="lg:ml-64 min-h-screen">
-        {/* Page content with proper padding for large screens */}
-        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 p-2 lg:p-1 xl:p-12 2xl:p-16">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="fixed top-4 left-4 z-[110] p-3 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors lg:hidden"
-            title="Open sidebar"
-            aria-label="Open navigation menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          
-          <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto">
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 px-2 sm:px-4 py-2 sm:py-4 xl:p-12 2xl:p-16">
+          <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
             <Outlet />
           </div>
         </main>
