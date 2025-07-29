@@ -103,7 +103,7 @@ function App() {
         {/* Protected Routes with Layout */}
         <Route path="/dashboard" element={
           <ProtectedRoute allowedRoles={['user', 'doctor', 'admin']}>
-            <Layout navbarSidebarControl>
+            <Layout>
               {(handleSidebarOpen: () => void) => <Navbar onSidebarOpen={handleSidebarOpen} />}
             </Layout>
           </ProtectedRoute>

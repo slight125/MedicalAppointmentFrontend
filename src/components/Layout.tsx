@@ -11,7 +11,6 @@ import {
   Users,
   BarChart3,
   LogOut,
-  Menu,
   X
 } from 'lucide-react'
 import { useState, useRef } from 'react'
@@ -20,7 +19,7 @@ import { Dialog } from '@headlessui/react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 
-export default function Layout({ navbarSidebarControl, children }: { navbarSidebarControl?: boolean, children?: (handleSidebarOpen: () => void) => React.ReactNode }) {
+export default function Layout({ children }: { children?: (handleSidebarOpen: () => void) => React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const auth = useSelector((state: RootState) => state.auth)
@@ -85,9 +84,6 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
   };
 
   const navigationItems = getNavigationItems()
-
-  // Expose sidebar open handler for Navbar
-  const handleSidebarOpen = () => setIsSidebarOpen(true);
 
   // Handle profile picture file select
   const handleProfilePicChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,21 +155,88 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {children && children(handleSidebarOpen)}
-      {/* Removed custom header row for hamburger + logo. Navbar will handle this. */}
-
-      {/* Mobile sidebar backdrop */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 z-[110] bg-black bg-opacity-50 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Always visible on desktop, collapsible on mobile */}
-      <div className={`fixed inset-y-0 left-0 z-[120] w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      {children && children(() => setIsSidebarOpen(true))}
+      {/* Sidebar as Dialog/Drawer on mobile, always visible on desktop */}
+      <Dialog open={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} className="lg:hidden z-[120]">
+        {/* Manual backdrop for compatibility */}
+        {isSidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-40 z-[110]" onClick={() => setIsSidebarOpen(false)} />}
+        <Dialog.Panel className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-lg z-[130] flex flex-col h-full">
+            {/* Sidebar content (same as desktop) */}
+            <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-600 rounded-full p-2">
+                  <Heart className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-base font-bold text-gray-800 dark:text-white">MediCare</span>
+              </div>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                title="Close sidebar"
+                aria-label="Close sidebar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            {/* ...rest of sidebar content (nav, user info, etc.)... */}
+            <nav className="mt-6 px-4 flex-1 overflow-y-auto">
+              <div className="space-y-2">
+                {navigationItems.map((item) => {
+                  const isActive = location.pathname === item.href
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={() => setIsSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                        isActive 
+                          ? 'bg-blue-600 text-white shadow-lg' 
+                          : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="truncate">{item.name}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </nav>
+            {/* User info and logout (same as before) */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              {/* User profile clickable area */}
+              <div
+                className="flex items-center gap-3 mb-4 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg p-2 transition"
+                onClick={() => setIsProfileModalOpen(true)}
+                title="View/Edit Profile"
+              >
+                {/* Profile picture or initials */}
+                {user?.profilePictureUrl ? (
+                  <img src={user.profilePictureUrl} alt="Profile" className="w-10 h-10 rounded-full object-cover border-2 border-blue-500" />
+                ) : (
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-semibold">
+                    {user?.firstname?.[0]}{user?.lastname?.[0]}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    {user?.firstname} {user?.lastname}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 capitalize truncate">{user?.role}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                <LogOut className="w-5 h-5 flex-shrink-0" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </Dialog.Panel>
+      </Dialog>
+      {/* Desktop sidebar */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-[120] lg:w-64 lg:bg-white lg:dark:bg-gray-800 lg:shadow-lg lg:flex lg:flex-col lg:h-full">
+        {/* Sidebar content (same as above) */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 rounded-full p-2">
@@ -181,18 +244,8 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
             </div>
             <span className="text-base font-bold text-gray-800 dark:text-white">MediCare</span>
           </div>
-          {/* Close button only visible on mobile */}
-          <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden"
-            title="Close sidebar"
-            aria-label="Close sidebar"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
-
-        <nav className="mt-6 px-4">
+        <nav className="mt-6 px-4 flex-1 overflow-y-auto">
           <div className="space-y-2">
             {navigationItems.map((item) => {
               const isActive = location.pathname === item.href
@@ -200,7 +253,6 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={() => setIsSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     isActive 
                       ? 'bg-blue-600 text-white shadow-lg' 
@@ -214,9 +266,8 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
             })}
           </div>
         </nav>
-
-        {/* User info and logout */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          {/* User info and logout button */}
           {/* User profile clickable area */}
           <div
             className="flex items-center gap-3 mb-4 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg p-2 transition"
@@ -247,7 +298,6 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
           </button>
         </div>
       </div>
-
       {/* Main content - Account for sidebar on desktop */}
       <div className="lg:ml-64 min-h-screen">
         <main className="min-h-screen bg-gray-50 dark:bg-gray-900 px-2 sm:px-4 py-2 sm:py-4 xl:p-12 2xl:p-16">
@@ -258,9 +308,9 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
       </div>
       {/* Profile Modal */}
       <Dialog open={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} className="fixed z-[200] inset-0 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4">
-          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
-          <div className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full mx-auto p-6 z-[210]">
+        {/* Manual backdrop for compatibility */}
+        {isProfileModalOpen && <div className="fixed inset-0 bg-black bg-opacity-40 z-[190]" onClick={() => setIsProfileModalOpen(false)} />}
+        <Dialog.Panel className="relative bg-white dark:bg-gray-900 rounded-xl shadow-xl max-w-md w-full mx-auto p-6 z-[210] flex flex-col items-center justify-center min-h-screen">
             <Dialog.Title className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Profile</Dialog.Title>
             {/* Profile picture upload */}
             <div className="flex flex-col items-center mb-4">
@@ -348,8 +398,7 @@ export default function Layout({ navbarSidebarControl, children }: { navbarSideb
                 </form>
               )}
             </div>
-          </div>
-        </div>
+          </Dialog.Panel>
       </Dialog>
     </div>
   )
