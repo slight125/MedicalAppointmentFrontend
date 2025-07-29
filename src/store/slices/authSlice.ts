@@ -11,6 +11,7 @@ export interface User {
   role: 'user' | 'admin' | 'doctor'
   created_at: string
   updated_at: string
+  profilePictureUrl?: string // Optional profile picture URL
 }
 
 export interface AuthState {
